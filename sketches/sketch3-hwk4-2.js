@@ -11,7 +11,7 @@ registerSketch('sk3', function (p) {
   const barW = 600;
   const barH = 48;
   const barX = (CANVAS_SIZE - barW) / 2;
-  const barY = 380;  // pushed lower to give clear room above
+  const barY = 380;
 
   p.setup = function () {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
@@ -127,11 +127,12 @@ registerSketch('sk3', function (p) {
     const pct = Math.floor(prog * 100);
     const activeIdx = currentBlockIdx();
     const state = workdayState();
+    const isOffHours = state !== 'DURING';
     const pc = progressColor(prog);
     const accent = p.color(pc[0], pc[1], pc[2]);
     const accentDark = p.color(pc[0] * 0.7, pc[1] * 0.7, pc[2] * 0.7);
 
-    // ── PRESET BADGE (TOP — far above the bar) ──
+    // ── PRESET BADGE ──
     p.fill(accent);
     p.rect(CANVAS_SIZE / 2 - 90, 130, 180, 22, 11);
     p.fill(255);
@@ -141,7 +142,7 @@ registerSketch('sk3', function (p) {
     p.text(preset.label + '  ·  ' + fmtHour(startHour) + ' – ' + fmtHour(endHour),
            CANVAS_SIZE / 2, 141);
 
-    // ── BIG % (centered between badge and bar) ──
+    // ── BIG % ──
     p.fill(30);
     p.textSize(96);
     p.textStyle(p.BOLD);
@@ -177,7 +178,6 @@ registerSketch('sk3', function (p) {
     p.strokeWeight(isOverBar() ? 2 : 1);
     p.rect(barX, barY, barW, barH, barH / 2);
 
-    // hour labels
     p.noStroke();
     p.fill(100);
     p.textSize(13);
@@ -201,13 +201,10 @@ registerSketch('sk3', function (p) {
     const blockGap = 16;
     const blockW = (barW - blockGap * (blocks.length - 1)) / blocks.length;
 
-    const isOffHours = state !== 'DURING';
-
     blocks.forEach((b, i) => {
       const bx = barX + i * (blockW + blockGap);
       const isActive = i === activeIdx;
 
-      // base fill — dim everything if off-hours
       p.noStroke();
       if (isActive) {
         p.fill(accent);
@@ -224,14 +221,9 @@ registerSketch('sk3', function (p) {
       p.rect(bx, blockY, blockW, blockH, 8);
 
       p.noStroke();
-      // text color — gray out during off hours
-      if (isActive) {
-        p.fill(255);
-      } else if (isOffHours) {
-        p.fill(160);
-      } else {
-        p.fill(80);
-      }
+      if (isActive) p.fill(255);
+      else if (isOffHours) p.fill(160);
+      else p.fill(80);
       p.textSize(13);
       p.textStyle(p.BOLD);
       p.textAlign(p.CENTER, p.CENTER);
@@ -246,13 +238,25 @@ registerSketch('sk3', function (p) {
              bx + blockW / 2, blockY + 46);
     });
 
-    // ── OFF-HOURS BANNER (below blocks, above info card) ──
+    // ── INFO BOX ──
+    // banner sits between block cards and info box; reserve space for it when off-hours
+    const bannerH = 32;
+    const bannerY = blockY + blockH + 16;
+    const infoY = isOffHours ? (bannerY + bannerH + 16) : (blockY + blockH + 30);
+    const infoH = 90;
+
+    // ── OFF-HOURS BANNER (drawn BEFORE info box, in its own clear row) ──
     if (isOffHours) {
-      const bannerY = blockY + blockH + 8;
       p.noStroke();
       p.fill(state === 'AFTER' ? p.color(220, 240, 225) : p.color(245, 240, 220));
-      p.rect(barX, bannerY, barW, 28, 6);
+      p.rect(barX, bannerY, barW, bannerH, 6);
 
+      p.noFill();
+      p.stroke(state === 'AFTER' ? p.color(140, 200, 150) : p.color(220, 180, 100));
+      p.strokeWeight(1);
+      p.rect(barX, bannerY, barW, bannerH, 6);
+
+      p.noStroke();
       p.fill(state === 'AFTER' ? p.color(60, 120, 80) : p.color(160, 110, 50));
       p.textSize(11);
       p.textStyle(p.BOLD);
@@ -260,13 +264,10 @@ registerSketch('sk3', function (p) {
       const msg = state === 'AFTER'
         ? 'OFF HOURS  ·  workday is complete  ·  no active block'
         : 'BEFORE WORKDAY  ·  workday has not started  ·  no active block';
-      p.text(msg, CANVAS_SIZE / 2, bannerY + 14);
+      p.text(msg, CANVAS_SIZE / 2, bannerY + bannerH / 2);
     }
 
-    // ── INFO BOX ──
-    const infoY = blockY + blockH + (isOffHours ? 50 : 30);
-    const infoH = 90;
-
+    // info box
     p.noStroke();
     p.fill(255);
     p.rect(barX, infoY, barW, infoH, 10);
