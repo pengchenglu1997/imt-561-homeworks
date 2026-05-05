@@ -7,7 +7,7 @@ registerSketch('sk3', function (p) {
   const barW = 600;
   const barH = 48;
   const barX = (CANVAS_SIZE - barW) / 2;
-  const barY = 280;
+  const barY = 340;  // moved down to make room for big % display
 
   p.setup = function () {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
@@ -21,7 +21,6 @@ registerSketch('sk3', function (p) {
     return (h - 12) + ' PM';
   }
 
-  // returns workday progress 0..1 (clamped)
   function workdayProgress() {
     const now = new Date();
     const cur = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
@@ -44,46 +43,46 @@ registerSketch('sk3', function (p) {
     p.textStyle(p.NORMAL);
     p.text('desktop screen  ·  remote workers  ·  workday tracker', CANVAS_SIZE / 2, 96);
 
+    const prog = workdayProgress();
+    const pct = Math.floor(prog * 100);
+
+    // ── BIG PERCENTAGE DISPLAY ──
+    p.fill(30);
+    p.textSize(96);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.CENTER, p.BASELINE);
+    p.text(pct + '%', CANVAS_SIZE / 2, barY - 50);
+
+    // small label "OF WORKDAY COMPLETE"
+    p.fill(140);
+    p.textSize(11);
+    p.textStyle(p.BOLD);
+    p.text('OF WORKDAY COMPLETE', CANVAS_SIZE / 2, barY - 28);
+
     // ── BAR TRACK ──
     p.noStroke();
     p.fill(220);
     p.rect(barX, barY, barW, barH, barH / 2);
 
     // ── PROGRESS FILL ──
-    const prog = workdayProgress();
     const fillW = barW * prog;
 
     if (fillW > 4) {
-      p.fill(60, 130, 220); // blue fill
+      p.fill(60, 130, 220);
       p.rect(barX, barY, fillW, barH, barH / 2);
 
-      // subtle highlight stripe on top of fill
       p.fill(255, 255, 255, 40);
       p.rect(barX + 2, barY + 2, fillW - 4, barH / 2 - 2, barH / 2);
     }
 
-    // ── BAR EDGE / OUTLINE ──
+    // bar outline
     p.noFill();
     p.stroke(180);
     p.strokeWeight(1);
     p.rect(barX, barY, barW, barH, barH / 2);
 
-    // ── STATUS TEXT (above bar, before workday / during / after) ──
-    let status;
-    const now = new Date();
-    const curH = now.getHours() + now.getMinutes() / 60;
-    if (curH < startHour) status = 'BEFORE WORKDAY';
-    else if (curH >= endHour) status = 'WORKDAY COMPLETE';
-    else status = 'WORKDAY IN PROGRESS';
-
-    p.noStroke();
-    p.fill(120);
-    p.textSize(11);
-    p.textStyle(p.BOLD);
-    p.textAlign(p.CENTER, p.CENTER);
-    p.text(status, CANVAS_SIZE / 2, barY - 28);
-
     // ── HOUR LABELS ──
+    p.noStroke();
     p.fill(100);
     p.textSize(13);
     p.textStyle(p.BOLD);
