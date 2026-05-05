@@ -11,6 +11,11 @@ registerSketch('sk2', function (p) {
   const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
                       'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
+  // mock weather data (Seattle)
+  const location = 'SEATTLE';
+  const tempC = 12;
+  const condition = 'CLOUDY';
+
   p.setup = function () {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
     p.textFont('sans-serif');
@@ -43,7 +48,7 @@ registerSketch('sk2', function (p) {
     p.fill(60);
     p.rect(watchX + watchW + 8, watchY + 80, 6, 30, 3);
 
-    // ── DATE (top of watch face) ──
+    // ── DATE ──
     const now = new Date();
     const dayName = dayNames[now.getDay()];
     const monName = monthNames[now.getMonth()];
@@ -51,13 +56,12 @@ registerSketch('sk2', function (p) {
     const dateStr = dayName + ' · ' + monName + ' ' + dayNum;
 
     p.fill(180);
-    p.noStroke();
     p.textSize(16);
     p.textStyle(p.NORMAL);
     p.textAlign(p.CENTER, p.CENTER);
     p.text(dateStr, watchX + watchW / 2, watchY + 90);
 
-    // ── BIG TIME DISPLAY ──
+    // ── BIG TIME ──
     const hh = p.nf(p.hour(), 2);
     const mm = p.nf(p.minute(), 2);
 
@@ -65,6 +69,17 @@ registerSketch('sk2', function (p) {
     p.textSize(120);
     p.textStyle(p.BOLD);
     p.text(hh + ':' + mm, watchX + watchW / 2, watchY + watchH / 2);
+
+    // ── LOCATION + WEATHER (bottom of watch face) ──
+    p.fill(160);
+    p.textSize(14);
+    p.textStyle(p.BOLD);
+    p.text(location + '  ·  ' + tempC + '°C', watchX + watchW / 2, watchY + watchH - 90);
+
+    p.fill(120);
+    p.textSize(11);
+    p.textStyle(p.NORMAL);
+    p.text(condition, watchX + watchW / 2, watchY + watchH - 70);
 
     // border frame
     p.noFill();
