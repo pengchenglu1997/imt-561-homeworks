@@ -1,11 +1,9 @@
 registerSketch('sk3', function (p) {
   const CANVAS_SIZE = 800;
 
-  // workday range
-  const startHour = 9;   // 9 AM
-  const endHour = 18;    // 6 PM
+  const startHour = 9;
+  const endHour = 18;
 
-  // progress bar dimensions
   const barW = 600;
   const barH = 48;
   const barX = (CANVAS_SIZE - barW) / 2;
@@ -23,10 +21,17 @@ registerSketch('sk3', function (p) {
     return (h - 12) + ' PM';
   }
 
+  // returns workday progress 0..1 (clamped)
+  function workdayProgress() {
+    const now = new Date();
+    const cur = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
+    const total = endHour - startHour;
+    return p.constrain((cur - startHour) / total, 0, 1);
+  }
+
   p.draw = function () {
     p.background(245);
 
-    // title
     p.noStroke();
     p.fill(30);
     p.textSize(22);
@@ -39,17 +44,46 @@ registerSketch('sk3', function (p) {
     p.textStyle(p.NORMAL);
     p.text('desktop screen  ·  remote workers  ·  workday tracker', CANVAS_SIZE / 2, 96);
 
-    // ── PROGRESS BAR FRAME ──
-    // outer track
+    // ── BAR TRACK ──
     p.noStroke();
     p.fill(220);
     p.rect(barX, barY, barW, barH, barH / 2);
 
-    // inner highlight (subtle)
-    p.fill(235);
-    p.rect(barX + 2, barY + 2, barW - 4, barH / 2 - 2, barH / 2);
+    // ── PROGRESS FILL ──
+    const prog = workdayProgress();
+    const fillW = barW * prog;
 
-    // ── HOUR TICK LABELS (below bar) ──
+    if (fillW > 4) {
+      p.fill(60, 130, 220); // blue fill
+      p.rect(barX, barY, fillW, barH, barH / 2);
+
+      // subtle highlight stripe on top of fill
+      p.fill(255, 255, 255, 40);
+      p.rect(barX + 2, barY + 2, fillW - 4, barH / 2 - 2, barH / 2);
+    }
+
+    // ── BAR EDGE / OUTLINE ──
+    p.noFill();
+    p.stroke(180);
+    p.strokeWeight(1);
+    p.rect(barX, barY, barW, barH, barH / 2);
+
+    // ── STATUS TEXT (above bar, before workday / during / after) ──
+    let status;
+    const now = new Date();
+    const curH = now.getHours() + now.getMinutes() / 60;
+    if (curH < startHour) status = 'BEFORE WORKDAY';
+    else if (curH >= endHour) status = 'WORKDAY COMPLETE';
+    else status = 'WORKDAY IN PROGRESS';
+
+    p.noStroke();
+    p.fill(120);
+    p.textSize(11);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.CENTER, p.CENTER);
+    p.text(status, CANVAS_SIZE / 2, barY - 28);
+
+    // ── HOUR LABELS ──
     p.fill(100);
     p.textSize(13);
     p.textStyle(p.BOLD);
@@ -62,7 +96,7 @@ registerSketch('sk3', function (p) {
     p.textAlign(p.RIGHT, p.CENTER);
     p.text(fmtHour(endHour), barX + barW, barY + barH + 24);
 
-    // tick marks above bar (start, mid, end)
+    // tick marks
     p.stroke(150);
     p.strokeWeight(1);
     p.line(barX, barY - 10, barX, barY - 4);
