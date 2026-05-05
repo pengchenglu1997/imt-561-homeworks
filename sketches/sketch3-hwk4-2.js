@@ -1,7 +1,6 @@
 registerSketch('sk3', function (p) {
   const CANVAS_SIZE = 800;
 
-  // ── workday presets (click to cycle) ──
   const presets = [
     { label: 'STANDARD', start: 9,  end: 18 },
     { label: 'EARLY',    start: 8,  end: 17 },
@@ -12,7 +11,7 @@ registerSketch('sk3', function (p) {
   const barW = 600;
   const barH = 48;
   const barX = (CANVAS_SIZE - barW) / 2;
-  const barY = 340;
+  const barY = 360;  // moved down slightly to give badge room
 
   p.setup = function () {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
@@ -42,6 +41,15 @@ registerSketch('sk3', function (p) {
     const cur = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
     const total = end - start;
     return p.constrain((cur - start) / total, 0, 1);
+  }
+
+  function workdayState() {
+    const { start, end } = presets[presetIdx];
+    const now = new Date();
+    const cur = now.getHours() + now.getMinutes() / 60;
+    if (cur < start) return 'BEFORE';
+    if (cur >= end) return 'AFTER';
+    return 'DURING';
   }
 
   function currentBlockIdx() {
@@ -117,6 +125,7 @@ registerSketch('sk3', function (p) {
     const prog = workdayProgress();
     const pct = Math.floor(prog * 100);
     const activeIdx = currentBlockIdx();
+    const state = workdayState();
     const pc = progressColor(prog);
     const accent = p.color(pc[0], pc[1], pc[2]);
     const accentDark = p.color(pc[0] * 0.7, pc[1] * 0.7, pc[2] * 0.7);
@@ -126,22 +135,28 @@ registerSketch('sk3', function (p) {
     p.textSize(96);
     p.textStyle(p.BOLD);
     p.textAlign(p.CENTER, p.BASELINE);
-    p.text(pct + '%', CANVAS_SIZE / 2, barY - 50);
+    p.text(pct + '%', CANVAS_SIZE / 2, barY - 80);
+
+    // status label changes by state
+    let statusLabel;
+    if (state === 'BEFORE') statusLabel = 'BEFORE WORKDAY';
+    else if (state === 'AFTER') statusLabel = 'WORKDAY COMPLETE';
+    else statusLabel = 'OF WORKDAY COMPLETE';
 
     p.fill(140);
     p.textSize(11);
     p.textStyle(p.BOLD);
-    p.text('OF WORKDAY COMPLETE', CANVAS_SIZE / 2, barY - 28);
+    p.text(statusLabel, CANVAS_SIZE / 2, barY - 58);
 
-    // preset badge near percentage
+    // ── PRESET BADGE (moved up to its own clear row) ──
     p.fill(accent);
-    p.rect(CANVAS_SIZE / 2 - 50, barY - 12, 100, 16, 8);
+    p.rect(CANVAS_SIZE / 2 - 80, barY - 38, 160, 18, 9);
     p.fill(255);
     p.textSize(9);
     p.textStyle(p.BOLD);
     p.textAlign(p.CENTER, p.CENTER);
-    p.text(preset.label + ' · ' + fmtHour(startHour) + '–' + fmtHour(endHour),
-           CANVAS_SIZE / 2, barY - 4);
+    p.text(preset.label + '  ·  ' + fmtHour(startHour) + '–' + fmtHour(endHour),
+           CANVAS_SIZE / 2, barY - 29);
 
     // ── BAR ──
     p.noStroke();
@@ -179,8 +194,8 @@ registerSketch('sk3', function (p) {
     p.line(barX + barW / 2, barY - 10, barX + barW / 2, barY - 4);
     p.line(barX + barW, barY - 10, barX + barW, barY - 4);
 
-    // ── BLOCK CARDS ──
-    const blockY = barY + barH + 70;
+    // ── BLOCK CARDS (with off-hours awareness) ──
+    const blockY = barY + barH + 60;
     const blockH = 70;
     const blockGap = 16;
     const blockW = (barW - blockGap * (blocks.length - 1)) / blocks.length;
@@ -211,6 +226,20 @@ registerSketch('sk3', function (p) {
       p.text(fmtHour(Math.floor(b.start)) + ' – ' + fmtHour(Math.floor(b.end)),
              bx + blockW / 2, blockY + 46);
     });
+
+    // off-hours overlay banner
+    if (state !== 'DURING') {
+      p.noStroke();
+      p.fill(30, 30, 30, 25);
+      p.rect(barX, blockY, barW, blockH, 8);
+
+      p.fill(state === 'AFTER' ? p.color(80, 140, 80) : p.color(140));
+      p.textSize(11);
+      p.textStyle(p.BOLD);
+      p.textAlign(p.CENTER, p.CENTER);
+      const msg = state === 'AFTER' ? '✓ OFF HOURS — WORKDAY COMPLETE' : '⏰ BEFORE WORKDAY STARTS';
+      p.text(msg, CANVAS_SIZE / 2, blockY + blockH / 2);
+    }
 
     // ── INFO BOX ──
     const infoY = blockY + blockH + 30;
@@ -254,16 +283,19 @@ registerSketch('sk3', function (p) {
     p.textAlign(p.LEFT, p.CENTER);
     p.text('REMAINING', barX + barW / 2 + 24, infoY + 22);
 
-    p.fill(accent);
     p.textSize(32);
     p.textStyle(p.BOLD);
-    if (remH === 0 && remM === 0) {
-      p.text('DONE', barX + barW / 2 + 24, infoY + 58);
+    if (state === 'AFTER') {
+      p.fill(80, 140, 80);
+      p.text('DONE ✓', barX + barW / 2 + 24, infoY + 58);
+    } else if (state === 'BEFORE') {
+      p.fill(140);
+      p.text('—:—', barX + barW / 2 + 24, infoY + 58);
     } else {
+      p.fill(accent);
       p.text(remH + 'h ' + p.nf(remM, 2) + 'm', barX + barW / 2 + 24, infoY + 58);
     }
 
-    // border
     p.noFill();
     p.stroke(0);
     p.strokeWeight(1);
