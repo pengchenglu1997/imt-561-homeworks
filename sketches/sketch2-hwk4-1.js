@@ -11,7 +11,7 @@ registerSketch('sk2', function (p) {
   const monthNames = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
                       'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
 
-  // mock weather data (Seattle)
+  // mock weather
   const location = 'SEATTLE';
   const tempC = 12;
   const condition = 'CLOUDY';
@@ -48,6 +48,33 @@ registerSketch('sk2', function (p) {
     p.fill(60);
     p.rect(watchX + watchW + 8, watchY + 80, 6, 30, 3);
 
+    // ── PROGRESS ARC: smooth seconds sweep around inner border ──
+    const cx = watchX + watchW / 2;
+    const cy = watchY + watchH / 2;
+    const arcW = watchW - 30;
+    const arcH = watchH - 30;
+    const secProgress = (p.second() + p.millis() % 1000 / 1000) / 60;
+
+    // background track (full ring)
+    p.noFill();
+    p.stroke(50);
+    p.strokeWeight(2);
+    p.rect(watchX + 15, watchY + 15, arcW, arcH, 36);
+
+    // active progress (cyan accent)
+    p.stroke(80, 200, 220);
+    p.strokeWeight(2.5);
+    p.strokeCap(p.ROUND);
+
+    // we draw the progress as a partial rounded rect path using arc
+    // simpler: draw a thin colored arc on top
+    const arcRadius = (Math.min(arcW, arcH)) / 2;
+    p.noFill();
+    p.stroke(80, 200, 220);
+    p.arc(cx, cy, arcW, arcH,
+          -p.HALF_PI,
+          -p.HALF_PI + secProgress * p.TWO_PI);
+
     // ── DATE ──
     const now = new Date();
     const dayName = dayNames[now.getDay()];
@@ -55,11 +82,12 @@ registerSketch('sk2', function (p) {
     const dayNum = now.getDate();
     const dateStr = dayName + ' · ' + monName + ' ' + dayNum;
 
+    p.noStroke();
     p.fill(180);
     p.textSize(16);
     p.textStyle(p.NORMAL);
     p.textAlign(p.CENTER, p.CENTER);
-    p.text(dateStr, watchX + watchW / 2, watchY + 90);
+    p.text(dateStr, cx, watchY + 90);
 
     // ── BIG TIME ──
     const hh = p.nf(p.hour(), 2);
@@ -68,18 +96,18 @@ registerSketch('sk2', function (p) {
     p.fill(240);
     p.textSize(120);
     p.textStyle(p.BOLD);
-    p.text(hh + ':' + mm, watchX + watchW / 2, watchY + watchH / 2);
+    p.text(hh + ':' + mm, cx, cy);
 
-    // ── LOCATION + WEATHER (bottom of watch face) ──
+    // ── LOCATION + WEATHER ──
     p.fill(160);
     p.textSize(14);
     p.textStyle(p.BOLD);
-    p.text(location + '  ·  ' + tempC + '°C', watchX + watchW / 2, watchY + watchH - 90);
+    p.text(location + '  ·  ' + tempC + '°C', cx, watchY + watchH - 90);
 
     p.fill(120);
     p.textSize(11);
     p.textStyle(p.NORMAL);
-    p.text(condition, watchX + watchW / 2, watchY + watchH - 70);
+    p.text(condition, cx, watchY + watchH - 70);
 
     // border frame
     p.noFill();
