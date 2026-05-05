@@ -1,19 +1,18 @@
 registerSketch('sk3', function (p) {
   const CANVAS_SIZE = 800;
 
-  const startHour = 9;
-  const endHour = 18;
+  // ── workday presets (click to cycle) ──
+  const presets = [
+    { label: 'STANDARD', start: 9,  end: 18 },
+    { label: 'EARLY',    start: 8,  end: 17 },
+    { label: 'LATE',     start: 10, end: 19 },
+  ];
+  let presetIdx = 0;
 
   const barW = 600;
   const barH = 48;
   const barX = (CANVAS_SIZE - barW) / 2;
   const barY = 340;
-
-  const blocks = [
-    { name: 'MORNING',   start: 9,  end: 12 },
-    { name: 'AFTERNOON', start: 12, end: 15 },
-    { name: 'EVENING',   start: 15, end: 18 },
-  ];
 
   p.setup = function () {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
@@ -27,14 +26,26 @@ registerSketch('sk3', function (p) {
     return (h - 12) + ' PM';
   }
 
+  function getBlocks() {
+    const { start, end } = presets[presetIdx];
+    const total = end - start;
+    return [
+      { name: 'MORNING',   start: start,                end: start + total / 3 },
+      { name: 'AFTERNOON', start: start + total / 3,    end: start + 2 * total / 3 },
+      { name: 'EVENING',   start: start + 2 * total / 3, end: end },
+    ];
+  }
+
   function workdayProgress() {
+    const { start, end } = presets[presetIdx];
     const now = new Date();
     const cur = now.getHours() + now.getMinutes() / 60 + now.getSeconds() / 3600;
-    const total = endHour - startHour;
-    return p.constrain((cur - startHour) / total, 0, 1);
+    const total = end - start;
+    return p.constrain((cur - start) / total, 0, 1);
   }
 
   function currentBlockIdx() {
+    const blocks = getBlocks();
     const now = new Date();
     const cur = now.getHours() + now.getMinutes() / 60;
     for (let i = 0; i < blocks.length; i++) {
@@ -44,20 +55,20 @@ registerSketch('sk3', function (p) {
   }
 
   function remainingTime() {
+    const { end } = presets[presetIdx];
     const now = new Date();
     const cur = now.getHours() * 60 + now.getMinutes();
-    const end = endHour * 60;
-    const diff = Math.max(0, end - cur);
+    const endMin = end * 60;
+    const diff = Math.max(0, endMin - cur);
     return [Math.floor(diff / 60), diff % 60];
   }
 
-  // map 0..1 progress to a color (cool blue → teal → warm orange/red)
   function progressColor(prog) {
     const stops = [
-      { t: 0,    c: [70, 140, 230] },   // morning blue
-      { t: 0.5,  c: [50, 180, 200] },   // midday teal
-      { t: 0.8,  c: [230, 150, 60] },   // late afternoon amber
-      { t: 1,    c: [220, 80, 70] },    // evening warm red
+      { t: 0,    c: [70, 140, 230] },
+      { t: 0.5,  c: [50, 180, 200] },
+      { t: 0.8,  c: [230, 150, 60] },
+      { t: 1,    c: [220, 80, 70] },
     ];
     for (let i = 0; i < stops.length - 1; i++) {
       const a = stops[i], b = stops[i + 1];
@@ -71,6 +82,13 @@ registerSketch('sk3', function (p) {
       }
     }
     return [60, 130, 220];
+  }
+
+  function isOverBar() {
+    return (
+      p.mouseX >= barX && p.mouseX <= barX + barW &&
+      p.mouseY >= barY - 10 && p.mouseY <= barY + barH + 10
+    );
   }
 
   p.draw = function () {
@@ -88,15 +106,22 @@ registerSketch('sk3', function (p) {
     p.textStyle(p.NORMAL);
     p.text('desktop screen  ·  remote workers  ·  workday tracker', CANVAS_SIZE / 2, 96);
 
+    p.fill(150);
+    p.textSize(11);
+    p.text('click progress bar to cycle:  ' + presets.map(x => x.label).join('  →  '), CANVAS_SIZE / 2, 118);
+
+    const preset = presets[presetIdx];
+    const startHour = preset.start;
+    const endHour = preset.end;
+    const blocks = getBlocks();
     const prog = workdayProgress();
     const pct = Math.floor(prog * 100);
     const activeIdx = currentBlockIdx();
     const pc = progressColor(prog);
     const accent = p.color(pc[0], pc[1], pc[2]);
     const accentDark = p.color(pc[0] * 0.7, pc[1] * 0.7, pc[2] * 0.7);
-    const accentTint = p.color(pc[0], pc[1], pc[2], 60);
 
-    // ── BIG PERCENTAGE ──
+    // ── BIG % ──
     p.fill(30);
     p.textSize(96);
     p.textStyle(p.BOLD);
@@ -108,12 +133,21 @@ registerSketch('sk3', function (p) {
     p.textStyle(p.BOLD);
     p.text('OF WORKDAY COMPLETE', CANVAS_SIZE / 2, barY - 28);
 
-    // ── BAR TRACK ──
+    // preset badge near percentage
+    p.fill(accent);
+    p.rect(CANVAS_SIZE / 2 - 50, barY - 12, 100, 16, 8);
+    p.fill(255);
+    p.textSize(9);
+    p.textStyle(p.BOLD);
+    p.textAlign(p.CENTER, p.CENTER);
+    p.text(preset.label + ' · ' + fmtHour(startHour) + '–' + fmtHour(endHour),
+           CANVAS_SIZE / 2, barY - 4);
+
+    // ── BAR ──
     p.noStroke();
-    p.fill(220);
+    p.fill(isOverBar() ? p.color(210) : p.color(220));
     p.rect(barX, barY, barW, barH, barH / 2);
 
-    // ── PROGRESS FILL — accent color ──
     const fillW = barW * prog;
     if (fillW > 4) {
       p.fill(accent);
@@ -123,8 +157,8 @@ registerSketch('sk3', function (p) {
     }
 
     p.noFill();
-    p.stroke(180);
-    p.strokeWeight(1);
+    p.stroke(isOverBar() ? accentDark : p.color(180));
+    p.strokeWeight(isOverBar() ? 2 : 1);
     p.rect(barX, barY, barW, barH, barH / 2);
 
     // hour labels
@@ -145,7 +179,7 @@ registerSketch('sk3', function (p) {
     p.line(barX + barW / 2, barY - 10, barX + barW / 2, barY - 4);
     p.line(barX + barW, barY - 10, barX + barW, barY - 4);
 
-    // ── BLOCK CARDS — active uses accent color ──
+    // ── BLOCK CARDS ──
     const blockY = barY + barH + 70;
     const blockH = 70;
     const blockGap = 16;
@@ -174,11 +208,12 @@ registerSketch('sk3', function (p) {
       p.fill(isActive ? p.color(255, 255, 255, 200) : p.color(140));
       p.textSize(11);
       p.textStyle(p.NORMAL);
-      p.text(fmtHour(b.start) + ' – ' + fmtHour(b.end), bx + blockW / 2, blockY + 46);
+      p.text(fmtHour(Math.floor(b.start)) + ' – ' + fmtHour(Math.floor(b.end)),
+             bx + blockW / 2, blockY + 46);
     });
 
-    // ── BOTTOM INFO BOX ──
-    const infoY = blockY + blockH + 40;
+    // ── INFO BOX ──
+    const infoY = blockY + blockH + 30;
     const infoH = 90;
 
     p.noStroke();
@@ -219,7 +254,6 @@ registerSketch('sk3', function (p) {
     p.textAlign(p.LEFT, p.CENTER);
     p.text('REMAINING', barX + barW / 2 + 24, infoY + 22);
 
-    // ── REMAINING uses accent color ──
     p.fill(accent);
     p.textSize(32);
     p.textStyle(p.BOLD);
@@ -234,6 +268,12 @@ registerSketch('sk3', function (p) {
     p.stroke(0);
     p.strokeWeight(1);
     p.rect(0, 0, p.width - 1, p.height - 1);
+  };
+
+  p.mousePressed = function () {
+    if (isOverBar()) {
+      presetIdx = (presetIdx + 1) % presets.length;
+    }
   };
 
   p.windowResized = function () { p.resizeCanvas(CANVAS_SIZE, CANVAS_SIZE); };
