@@ -7,7 +7,29 @@
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.10/lib/p5.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/p5@1.11.10/lib/addons/p5.sound.min.js"></script>
   <link rel="stylesheet" type="text/css" href="style.css">
-  <title>IMT 561 Portfolio | Data Visualization: Design And Development</title>
+  <title>Pengcheng Lu | IMT 561 Portfolio</title>
+  <style>
+    /* ── Welcome page polish ── */
+    .welcome-photo img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; display: block; }
+    .welcome-photo { width: 180px; height: 180px; border-radius: 50%; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+
+    /* ── Writeup polish ── */
+    .hwk-template h3 { color: #1a2744; border-bottom: 2px solid #2d8cff; padding-bottom: 6px; margin-top: 28px; }
+    .hwk-template h4 { color: #2d8cff; margin-top: 22px; margin-bottom: 6px; }
+    .hwk-template p { line-height: 1.65; }
+
+    /* ── Sketch grid for hand-drawn photos ── */
+    .sketch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 18px 0; }
+    .sketch-grid figure { margin: 0; }
+    .sketch-grid img { width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1); display: block; }
+    .sketch-grid figcaption { font-size: 12px; color: #666; margin-top: 6px; text-align: center; }
+    .sketch-grid .full { grid-column: 1 / -1; }
+
+    /* ── Iteration log box ── */
+    .iter-list { background: #f4f6f9; border-left: 4px solid #2d8cff; padding: 14px 20px; border-radius: 6px; margin: 18px 0; }
+    .iter-list ol { margin: 0; padding-left: 20px; }
+    .iter-list li { margin-bottom: 10px; line-height: 1.55; }
+  </style>
 </head>
 
 <body>
@@ -37,102 +59,208 @@
       <button type="button" class="tab-btn" data-target="tab15" data-sketch="sk15" role="tab">HWK 5</button>
     </nav>
 
-    <!-- Welcome: Homepage -->
+    <!-- ───────── WELCOME ───────── -->
     <section id="tab1" class="tab-content active" role="tabpanel">
       <div class="welcome-template" aria-labelledby="welcome-title">
         <h2 id="welcome-title">Welcome to My IMT 561 Portfolio</h2>
 
         <div class="welcome-profile">
-          <div class="welcome-photo" role="img" aria-label="Profile photo placeholder">
-            <!-- Replace with your own photo -->
-            <!-- <img src="images/your-photo.jpg" alt="Photo of [Your name]" /> -->
-            <span>Add a photo</span>
+          <div class="welcome-photo" role="img" aria-label="Pengcheng Lu profile photo">
+            <img src="images/pengcheng.jpg" alt="Pengcheng Lu" />
           </div>
 
           <div class="welcome-copy">
-            <p><strong>[Your name]</strong> ([optional pronouns])</p>
-            <p>I am a master’s student in [program], focused on [interest area or domain].</p>
-            <p>This quarter I want to get better at [analysis, storytelling, interaction design, etc.].</p>
-            <p>One dataset or topic I am excited to visualize is [topic], because [short reason].</p>
+            <p><strong>Pengcheng Lu</strong></p>
+            <p>I am a master's student in the UW MSIM program at the iSchool, focused on data science, causal inference, and applied research.</p>
+            <p>This quarter I want to get better at interaction design and visual storytelling — turning data into something people can feel, not just read.</p>
+            <p>One topic I'm excited to visualize is how cultural and informational systems shape everyday behavior — from library borrowing patterns to how knowledge workers experience time.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Homework 4: Sketch 1 -->
+    <!-- ───────── HWK 4.1 — BIG CHARACTER WATCH ───────── -->
     <section id="tab2" class="tab-content" role="tabpanel">
       <div id="sketch-container-sk2" class="sketch-container"></div>
       <div id="sketch-drawing-sk2" class="sketch-evolution">
         <div class="welcome-template hwk-template" aria-labelledby="sk2-notes-title">
-          <h3 id="sk2-notes-title">Documenting iterative process</h3>
-          <p class="small-note">Replace placeholders with your own notes and images.</p>
+          <h3 id="sk2-notes-title">HWK 4.1 — Big Character Watch</h3>
+
+          <h4>Context of use</h4>
           <p>
-            Context of use: Explain where your clocks/timers would be used, by whom, and what problem they help solve. [add 2-3 sentences]
+            <strong>Who:</strong> Knowledge workers and commuters who glance at a smartwatch or
+            desktop widget for a quick read of time, date, and weather — without unlocking
+            their phone or opening an app.
+            <strong>Where:</strong> Smartwatch face, desktop ambient widget, or a pinned
+            browser tab on a second monitor.
+            <strong>Problem solved:</strong> Most analog and digital clocks force the user to
+            decode small numerals or interpret hand positions. A big-character watch lets
+            users read the time at peripheral glance, with date and weather one row away.
+            I'm personally drawn to this design because I check time dozens of times a day,
+            and small fonts on a watch make that feel like work.
           </p>
 
           <article class="clock-template">
-            <h4>Final Clock 1</h4>
-            <p class="small-note">Sketch iteration documentation (paper/hand-drawn photos)</p>
-            <div class="iteration-grid">
-              <figure class="iteration-item">
-                <!-- <img src="images/clock1-sketch1.jpg" alt="Clock 1 sketch iteration 1" /> -->
-                <div class="image-placeholder">Clock 1 sketch photo 1</div>
-              </figure>
-              <figure class="iteration-item">
-                <!-- <img src="images/clock1-sketch2.jpg" alt="Clock 1 sketch iteration 2" /> -->
-                <div class="image-placeholder">Clock 1 sketch photo 2</div>
-              </figure>
+            <h4>Sketches I explored (1–5: smartwatch face designs)</h4>
+            <div class="sketch-grid">
+              <figure><img src="images/sketch-1.jpeg" alt="Sketch 1: Apple-themed IoT watch face" /><figcaption>1. Apple-themed IoT watch face</figcaption></figure>
+              <figure><img src="images/sketch-2.jpeg" alt="Sketch 2: Binary clock" /><figcaption>2. Binary Clock</figcaption></figure>
+              <figure><img src="images/sketch-3.jpeg" alt="Sketch 3: Big-character clock (selected)" /><figcaption>3. Big-character clock ★ selected</figcaption></figure>
+              <figure><img src="images/sketch-4.jpeg" alt="Sketch 4: Mandain minimal analog" /><figcaption>4. Mandain minimal analog</figcaption></figure>
+              <figure class="full"><img src="images/sketch-5.jpeg" alt="Sketch 5: Word clock" /><figcaption>5. Word Clock</figcaption></figure>
             </div>
+
+            <h4>Why I chose Sketch 3 (Big-character)</h4>
             <p>
-              Design process: In 1–2 paragraphs (or bullet points), explain how this clock evolved from sketches to final
-              form. Name the information visualization principles you applied (readability, hierarchy, color, layout,
-              interaction, accessibility). [mention 2-3 design decisions and why]
+              Of the five smartwatch face explorations, Sketch 3 had the strongest payoff
+              per pixel: it shows time, date, location, and weather without any hand-decoding
+              (unlike the IoT concentric rings or the binary clock) and without sacrificing
+              density (unlike the Mandain minimal analog or the pure word clock). The
+              hierarchy is clear — big time in the middle, supporting info above and below —
+              which maps perfectly onto how people actually scan a watch face.
+            </p>
+
+            <h4>Design decisions in the final clock</h4>
+            <p>
+              <strong>1. Hierarchy by size.</strong> The HH:MM time is rendered at 120pt —
+              roughly 6× the size of the date and weather rows. This guarantees the primary
+              information is read first, with peripheral vision.
             </p>
             <p>
-              Self-reflection / future work: What would you improve next, and why? [add two improvements you'd make and explain why]
+              <strong>2. Continuous progress arc.</strong> A thin cyan arc sweeps the inner
+              border every minute. I switched from <code>p.second()</code> +
+              <code>p.millis()</code> to a single <code>Date.now() % 60000</code> source to
+              eliminate a one-frame jump on the seconds rollover.
+            </p>
+            <p>
+              <strong>3. Day/night background gradient.</strong> The watch face background
+              interpolates between four anchor colors (deep navy at midnight, cool blue at
+              dawn, neutral at noon, warm purple at dusk). This adds a subtle "time of day"
+              cue beyond the numeric display.
+            </p>
+            <p>
+              <strong>4. Click to cycle face themes.</strong> Clicking the watch face cycles
+              between three layouts — BIG TIME (default), DATE FOCUS (large weekday + day
+              number), and WEATHER FOCUS (large temperature). This mirrors how Apple Watch
+              users customize complications, and lets the same data structure serve different
+              glance contexts.
+            </p>
+
+            <h4>Self-reflection / future work</h4>
+            <p>
+              Real geolocation + live weather API (currently mocked at Seattle 12°C). Animated
+              transitions between face themes. The day/night gradient is intentionally subtle,
+              but a more visible background motif (sun/moon icon) would make the temporal cue
+              stronger for low-attention glances.
             </p>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- Homework 4: Sketch 1 -->
+    <!-- ───────── HWK 4.2 — WORKDAY PROGRESS BAR ───────── -->
     <section id="tab3" class="tab-content" role="tabpanel">
       <div id="sketch-container-sk3" class="sketch-container"></div>
       <div id="sketch-drawing-sk3" class="sketch-evolution">
         <div class="welcome-template hwk-template" aria-labelledby="sk3-notes-title">
-          <h3 id="sk3-notes-title">Documenting iterative process</h3>
-          <p class="small-note">Replace placeholders with your own notes and images.</p>
+          <h3 id="sk3-notes-title">HWK 4.2 — Workday Progress Bar (Final Prototype)</h3>
+
+          <h4>Context of use</h4>
           <p>
-            Context of use: Explain where your clocks/timers would be used, by whom, and what problem they help solve. [add 2-3 sentences]
+            <strong>Who:</strong> Remote and hybrid workers tracking how much of the workday
+            is left. Especially people in flow-state work who lose track of time.
+            <strong>Where:</strong> Desktop browser tab, second-monitor widget, or pinned in
+            a productivity dashboard.
+            <strong>Problem solved:</strong> "How much of the workday is left" is something
+            people compute in their head every hour. A loading-bar metaphor turns that
+            question into a familiar UI affordance instead of a math problem.
           </p>
 
           <article class="clock-template">
-            <h4>Final Clock 2</h4>
-            <p class="small-note">Sketch iteration documentation (paper/hand-drawn photos)</p>
-            <div class="iteration-grid">
-              <figure class="iteration-item">
-                <!-- <img src="images/clock2-sketch1.jpg" alt="Clock 2 sketch iteration 1" /> -->
-                <div class="image-placeholder">Clock 2 sketch photo 1</div>
-              </figure>
-              <figure class="iteration-item">
-                <!-- <img src="images/clock2-sketch2.jpg" alt="Clock 2 sketch iteration 2" /> -->
-                <div class="image-placeholder">Clock 2 sketch photo 2</div>
-              </figure>
+            <h4>Sketches I explored (6–10: office worker tools)</h4>
+            <div class="sketch-grid">
+              <figure><img src="images/sketch-6.jpeg" alt="Sketch 6: Email Inbox Clock" /><figcaption>6. Email Inbox Clock</figcaption></figure>
+              <figure><img src="images/sketch-7.jpeg" alt="Sketch 7: Coffee Cup Clock" /><figcaption>7. Coffee Cup Clock</figcaption></figure>
+              <figure><img src="images/sketch-8.jpeg" alt="Sketch 8: Progress Bar Clock (selected)" /><figcaption>8. Progress Bar Clock ★ selected</figcaption></figure>
+              <figure><img src="images/sketch-9.jpeg" alt="Sketch 9: Subway Map Clock" /><figcaption>9. Subway Map Clock</figcaption></figure>
+              <figure class="full"><img src="images/sketch-10.jpeg" alt="Sketch 10: Stamp Card Clock" /><figcaption>10. Stamp Card Clock</figcaption></figure>
             </div>
+
+            <h4>Why I chose Sketch 8 (Progress Bar)</h4>
             <p>
-              Design process: In 1–2 paragraphs (or bullet points), explain your iterations and final decisions. Make
-              explicit which visualization considerations shaped the result. [mention 2-3 design decisions and why]
+              All five sketches in this group address office time-tracking, but the progress
+              bar hits a sweet spot: zero learning curve (everyone has watched a software
+              loading bar), precise (percentage is unambiguous), and dense enough to support
+              secondary information (time blocks, remaining time, current time) without
+              becoming cluttered. The coffee cup and stamp card are charming but
+              lower-resolution; the subway map is interesting but more about milestones than
+              continuous progress; the email inbox skews task-list rather than time-aware.
+            </p>
+
+            <h4>Design decisions in the final clock</h4>
+            <p>
+              <strong>1. Bar = whole workday.</strong> The bar spans 9 AM to 6 PM and fills
+              as the day progresses. The fill width directly maps to elapsed workday — no
+              math required.
             </p>
             <p>
-              Self-reflection / future work: What would you improve next, and why? [add two improvements you'd make and explain why]
+              <strong>2. Big-percentage primary readout.</strong> A 96pt percentage sits
+              above the bar so users get the answer at peripheral glance. The bar itself
+              supplies the spatial context.
+            </p>
+            <p>
+              <strong>3. Color shifts with the time of day.</strong> Progress fill, active
+              block card, and the REMAINING countdown all share an accent color that
+              interpolates cool-blue → teal → amber → warm-red across the workday. The
+              "temperature" of the bar tells you intuitively where you are, even without
+              reading the number.
+            </p>
+            <p>
+              <strong>4. Three-block decomposition.</strong> Below the bar I show MORNING /
+              AFTERNOON / EVENING cards with the active period highlighted. This adds a
+              coarser mental model — "I'm in afternoon" — to the precise percentage.
+            </p>
+            <p>
+              <strong>5. Click to cycle workday presets.</strong> Clicking the bar swaps
+              between STANDARD (9–6), EARLY (8–5), and LATE (10–7) shifts. Same visual
+              language, different schedule. This prevents the clock from being useful only
+              to one cohort.
+            </p>
+
+            <h4>Iteration log (peer feedback + self-testing)</h4>
+            <div class="iter-list">
+              <ol>
+                <li><strong>Iteration 1 (self-testing):</strong> The first version showed
+                  only the progress bar without a percentage label. I found I was eyeballing
+                  the fill width to estimate progress. Added a 96pt percentage above the bar
+                  — primary readout in one glance.</li>
+                <li><strong>Iteration 2 (peer feedback):</strong> A classmate noted "I see
+                  the bar but I don't know what time it actually is." Added the bottom info
+                  card with CURRENT TIME (HH:MM:SS) and REMAINING (Xh XXm) — making the
+                  abstract progress concrete.</li>
+                <li><strong>Iteration 3 (self-testing):</strong> A flat blue bar felt "the
+                  same" all day. Replaced the fixed color with a workday-temperature gradient
+                  (blue → teal → amber → red). An afternoon screenshot now reads warmer than
+                  a morning one — the color reinforces the percentage.</li>
+                <li><strong>Iteration 4 (peer feedback):</strong> Reviewer asked "what if I
+                  work a different shift?" Added the click-to-cycle workday presets. Same UI,
+                  three schedules, with a badge above the bar showing the active preset.</li>
+              </ol>
+            </div>
+
+            <h4>Self-reflection / future work</h4>
+            <p>
+              Persist the chosen preset to <code>localStorage</code>. A drag handle to set
+              custom start/end times. Deeper accessibility — currently the design relies on
+              color for the workday-temperature cue, so a colorblind-safe alternative
+              encoding (pattern or icon) would be the next addition.
             </p>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- Examples -->
+    <!-- Examples (unchanged) -->
     <section id="tab5" class="tab-content" role="tabpanel">
       <div id="sketch-container-sk5" class="sketch-container"></div>
     </section>
@@ -183,51 +311,17 @@
             by Raizel Lagunero —
             <a href="https://github.com/lagunra/interactive_info_vis_474/blob/main/sketches/sketch4.js" target="_blank" rel="noopener noreferrer">source code</a>
           </p>
-          <p>
-            Context of use: This clock is based on a bookshelf that adds to the cozy, focused ambiance of studying.
-          </p>
-
+          <p>Context of use: This clock is based on a bookshelf that adds to the cozy, focused ambiance of studying.</p>
           <article class="clock-template">
             <h4>Ex 10</h4>
-            <p>
-              Design process: Each shelf represents either the hour, minute, or second of the day. The number of books
-              per shelf represents that amount, and the potted plant shows the time for quick understanding. The
-              background color represents AM and PM by light and dark shades, respectively, helping users intuitively
-              recognize the time while maintaining a relaxed study atmosphere. This design is meant to be used as a
-              background webpage to use while studying.
-            </p>
-            <p>
-              Self-reflection / future work: Improve this design by adding more visual details, textures, and lighting
-              effects that enhance a peaceful and studious scene.
-            </p>
+            <p>Design process: Each shelf represents either the hour, minute, or second of the day. The number of books per shelf represents that amount, and the potted plant shows the time for quick understanding. The background color represents AM and PM by light and dark shades, respectively, helping users intuitively recognize the time while maintaining a relaxed study atmosphere. This design is meant to be used as a background webpage to use while studying.</p>
+            <p>Self-reflection / future work: Improve this design by adding more visual details, textures, and lighting effects that enhance a peaceful and studious scene.</p>
           </article>
-
           <h4>Sketch evolution</h4>
           <div class="iteration-grid">
-            <figure class="iteration-item">
-              <img src="images/lagunra/sk4-evolution-1.png" alt="Ex 10 sketch evolution step 1" />
-              <figcaption>
-                Step 1 — This sketch depicts timer that is represented by books on a bookshelf. It had features of
-                representing a student's classes and the amount of time that was studied per class. However, this design
-                was too cluttered and did not fit the ambiant visualization that I had envisioned.
-              </figcaption>
-            </figure>
-            <figure class="iteration-item">
-              <img src="images/lagunra/sk4-evolution-2.png" alt="Ex 10 sketch evolution step 2" />
-              <figcaption>
-                Step 2 — I simplified the design to only include three simple bookshelves, and instead of a timer, I
-                implemented a clock. However, I recieved feedback that it was difficult to immediately count how many
-                books were in each shelf, and it the clock did not show whether it was in the AM or PM.
-              </figcaption>
-            </figure>
-            <figure class="iteration-item">
-              <img src="images/lagunra/sk4-evolution-3.png" alt="Ex 10 sketch evolution step 3" />
-              <figcaption>
-                Step 3 — I added numeric labels on potted plants at the end of each shelf to allow the user to quickly
-                understand what time it was. I also added a background feature that reflected what time of day it is;
-                light background represents AM, and dark represents PM.
-              </figcaption>
-            </figure>
+            <figure class="iteration-item"><img src="images/lagunra/sk4-evolution-1.png" alt="Ex 10 sketch evolution step 1" /><figcaption>Step 1 — bookshelf timer with classes (too cluttered)</figcaption></figure>
+            <figure class="iteration-item"><img src="images/lagunra/sk4-evolution-2.png" alt="Ex 10 sketch evolution step 2" /><figcaption>Step 2 — simplified to three shelves</figcaption></figure>
+            <figure class="iteration-item"><img src="images/lagunra/sk4-evolution-3.png" alt="Ex 10 sketch evolution step 3" /><figcaption>Step 3 — added numeric labels and AM/PM background</figcaption></figure>
           </div>
         </div>
       </div>
@@ -242,56 +336,17 @@
             by Yongxi Chen —
             <a href="https://github.com/yongxi1202/interactive_info_vis/blob/main/sketches/sketch2.js" target="_blank" rel="noopener noreferrer">source code</a>
           </p>
-          <p>
-            Context of use: This sketch represents the rhythm of box breathing, a meditation technique used to calm
-            the mind and reduce stress by maintaining a steady 4-4-4-4 breathing cycle: breathe in, hold, breathe out,
-            hold. It is designed for mindfulness practice, stress management sessions, and focus exercises where users
-            need visual and temporal guidance to regulate their breathing.
-          </p>
-
+          <p>Context of use: This sketch represents the rhythm of box breathing, a meditation technique used to calm the mind and reduce stress by maintaining a steady 4-4-4-4 breathing cycle.</p>
           <article class="clock-template">
             <h4>Ex 11</h4>
-            <p>
-              Design process:
-            </p>
-            <ol>
-              <li>
-                <strong>Square path visualization:</strong> The breathing cycle is represented by a square with four
-                edges, where each edge corresponds to one breathing phase. A colored line progressively draws around
-                the square, providing clear visual tracking of the 4-second intervals. The square shape reinforces the
-                "box breathing" concept.
-              </li>
-              <li>
-                <strong>Color-coded phases:</strong> Each of the four phases uses a distinct teal-to-gray gradient
-                color (teal for inhale, light blue for first hold, mint for exhale, gray for second hold).
-              </li>
-              <li>
-                <strong>Countdown timer with neon glow:</strong> Large text displays the current phase label. The neon
-                glow effect on the lines creates a calming, modern aesthetic while maintaining high visibility against
-                the starry background.
-              </li>
-            </ol>
-            <p>
-              Self-reflection / future work: Add customizable breathing durations (e.g., 3-3-3-3 or 5-5-5-5 cycles) to
-              accommodate different skill levels. Include audio cues or gentle sound at phase transitions to support
-              eyes-closed practice.
-            </p>
+            <p>Design process: Square path, color-coded phases, countdown timer with neon glow.</p>
+            <p>Self-reflection / future work: Customizable durations, audio cues at phase transitions.</p>
           </article>
-
           <h4>Sketch evolution</h4>
           <div class="iteration-grid">
-            <figure class="iteration-item">
-              <img src="images/yongxi1202/IMG_2226.jpg" alt="Ex 11 sketch evolution step 1" />
-              <figcaption><strong>Step 1 — Initial layout</strong></figcaption>
-            </figure>
-            <figure class="iteration-item">
-              <img src="images/yongxi1202/IMG_2227.jpg" alt="Ex 11 sketch evolution step 2" />
-              <figcaption><strong>Step 2 — After peer feedback</strong></figcaption>
-            </figure>
-            <figure class="iteration-item">
-              <img src="images/yongxi1202/IMG_2228.jpg" alt="Ex 11 sketch evolution step 3" />
-              <figcaption><strong>Step 3 — Final refined version</strong></figcaption>
-            </figure>
+            <figure class="iteration-item"><img src="images/yongxi1202/IMG_2226.jpg" alt="Ex 11 sketch evolution step 1" /><figcaption>Step 1 — initial layout</figcaption></figure>
+            <figure class="iteration-item"><img src="images/yongxi1202/IMG_2227.jpg" alt="Ex 11 sketch evolution step 2" /><figcaption>Step 2 — after peer feedback</figcaption></figure>
+            <figure class="iteration-item"><img src="images/yongxi1202/IMG_2228.jpg" alt="Ex 11 sketch evolution step 3" /><figcaption>Step 3 — final refined version</figcaption></figure>
           </div>
         </div>
       </div>
@@ -306,52 +361,17 @@
             by Teresa Wang —
             <a href="https://github.com/TeresaWww/interactive_info_vis/blob/main/sketches/sketch2.js" target="_blank" rel="noopener noreferrer">source code</a>
           </p>
-          <p>
-            Context: This clock is designed for people who love making pancakes. It works as a fun, visual timer to use
-            while cooking, helping users track how long their pancakes have been frying through animation and color
-            changes.
-          </p>
-
+          <p>Context: This clock is designed for people who love making pancakes. A fun, visual timer that tracks how long pancakes have been frying.</p>
           <article class="clock-template">
             <h4>Ex 12</h4>
-            <p>
-              Design process: For my pancake clock, I designed the layout as a pancake cooking simulator. It shows a
-              pan frying pancakes and then dropping them onto a plate, which makes the whole clock feel like a small
-              kitchen scene. The animation was an intentional choice because it imitates a real cooking environment and
-              makes the passage of time more visual and engaging.
-            </p>
-            <p>
-              The color change of the pancakes is another key design choice. They start light and gradually turn golden
-              brown as time passes. This helps people understand how long the pancake has been cooking without needing
-              to read numbers, giving a more natural sense of time. I also added a countdown counter below the plate to
-              give users a clear, easy-to-read time reference, balancing fun visuals with functional feedback.
-            </p>
-            <p>
-              Since I wasn’t able to hand-draw detailed pancakes due to limited time, the visuals could have looked
-              more polished if I had more time to refine them. I also chose warm, high-contrast colors (browns and
-              yellows) for better visibility and accessibility.
-            </p>
-            <p>
-              Self-reflection / future work: In the future, I would like to add more realistic pancake textures and
-              steam effects to make the cooking scene feel livelier. I also plan to add features like letting users
-              flip the pancakes with a click to include simple interactivity.
-            </p>
+            <p>Design process: A pancake cooking simulator. The pancakes change color from light to golden brown as time passes.</p>
+            <p>Self-reflection / future work: More realistic pancake textures and steam effects, click to flip pancakes.</p>
           </article>
-
           <h4>Sketch evolution</h4>
           <div class="iteration-grid">
-            <figure class="iteration-item">
-              <img src="images/TeresaWww/pancakev1.png" alt="Ex 12 sketch evolution step 1" />
-              <figcaption>Step 1 — initial layout and annotated design decisions</figcaption>
-            </figure>
-            <figure class="iteration-item">
-              <img src="images/TeresaWww/pancakev2.png" alt="Ex 12 sketch evolution step 2" />
-              <figcaption>Step 2 — second layout after peer feedback</figcaption>
-            </figure>
-            <figure class="iteration-item">
-              <img src="images/TeresaWww/pancakev3.png" alt="Ex 12 sketch evolution step 3" />
-              <figcaption>Step 3 — refined visuals and annotations</figcaption>
-            </figure>
+            <figure class="iteration-item"><img src="images/TeresaWww/pancakev1.png" alt="Ex 12 sketch evolution step 1" /><figcaption>Step 1 — initial layout</figcaption></figure>
+            <figure class="iteration-item"><img src="images/TeresaWww/pancakev2.png" alt="Ex 12 sketch evolution step 2" /><figcaption>Step 2 — after peer feedback</figcaption></figure>
+            <figure class="iteration-item"><img src="images/TeresaWww/pancakev3.png" alt="Ex 12 sketch evolution step 3" /><figcaption>Step 3 — refined visuals</figcaption></figure>
           </div>
         </div>
       </div>
