@@ -158,6 +158,27 @@
               glance contexts.
             </p>
 
+            <h4>Iteration log (peer feedback + self-testing)</h4>
+            <div class="iter-list">
+              <ol>
+                <li><strong>Iteration 1 (self-testing):</strong> First version showed only
+                  HH:MM with no surrounding context. The watch felt like a digital alarm
+                  clock — usable but generic. Added the date row above and location/weather
+                  row below to mirror real smartwatch information density.</li>
+                <li><strong>Iteration 2 (self-testing):</strong> Added a progress arc using
+                  <code>p.second() + p.millis()/1000</code>. Noticed a one-frame jump every
+                  time seconds rolled over. Switched the entire animation to
+                  <code>Date.now() % 60000</code> — single time source, perfectly smooth.</li>
+                <li><strong>Iteration 3 (peer feedback):</strong> A classmate said the watch
+                  "looked the same at 9 AM and 9 PM." Added the day/night background
+                  gradient that interpolates between four anchor colors across 24h, so an
+                  evening screenshot now reads visibly different from a morning one.</li>
+                <li><strong>Iteration 4 (peer feedback):</strong> Reviewer asked "what if I
+                  care more about the date than the time?" Added the click-to-cycle face
+                  themes — BIG TIME / DATE FOCUS / WEATHER FOCUS — so the same watch can
+                  serve different glance contexts.</li>
+              </ol>
+            </div>
             <h4>Self-reflection / future work</h4>
             <p>
               Real geolocation + live weather API (currently mocked at Seattle 12°C). Animated
