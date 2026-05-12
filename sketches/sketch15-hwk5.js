@@ -307,20 +307,14 @@ registerSketch('sk15', function (p) {
     const px = xAt(FIRST_PEAK_IDX);
     const py = yAt(DATA[FIRST_PEAK_IDX].v);
 
-    // Annotation sits high enough to clear the +34.5% reference line below
-    // and far enough above the peak to not collide with the Reese Pick label.
-    // The trigger attribution is already carried by REESE PICK ("Sep 2018 → NYT #1"),
-    // so this annotation now only carries the magnitude — the "what happened next."
     const annoY = py - 56;
 
-    // Dashed connector
     p.stroke(SUB_INK);
     p.strokeWeight(0.9);
     setDash([2, 3]);
     p.line(px, annoY + 38, px, py - 6);
     setDash([]);
 
-    // Peak dot (brown — secondary visual weight)
     p.noStroke();
     p.fill(EVENT_INK);
     p.circle(px, py, 7);
@@ -330,13 +324,11 @@ registerSketch('sk15', function (p) {
     p.textFont('Georgia');
     p.textAlign(p.CENTER, p.TOP);
 
-    // Magnitude — absolute peak only (parallel to "3×" but in secondary scale)
     p.fill(INK);
     p.textStyle(p.BOLD);
     p.textSize(18);
     p.text('380/mo', px, annoY);
 
-    // Caption
     p.fill(SUB_INK);
     p.textSize(9);
     p.textStyle(p.ITALIC);
