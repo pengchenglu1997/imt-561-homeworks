@@ -307,13 +307,17 @@ registerSketch('sk15', function (p) {
     const px = xAt(FIRST_PEAK_IDX);
     const py = yAt(DATA[FIRST_PEAK_IDX].v);
 
-    const annoY = py - 78;
+    // Annotation sits high enough to clear the +34.5% reference line below
+    // and far enough above the peak to not collide with the Reese Pick label.
+    // The trigger attribution is already carried by REESE PICK ("Sep 2018 → NYT #1"),
+    // so this annotation now only carries the magnitude — the "what happened next."
+    const annoY = py - 56;
 
     // Dashed connector
     p.stroke(SUB_INK);
     p.strokeWeight(0.9);
     setDash([2, 3]);
-    p.line(px, annoY + 56, px, py - 6);
+    p.line(px, annoY + 38, px, py - 6);
     setDash([]);
 
     // Peak dot (brown — secondary visual weight)
@@ -323,32 +327,20 @@ registerSketch('sk15', function (p) {
     p.fill(BG);
     p.circle(px, py, 2.5);
 
-    // Annotation — names trigger + absolute peak (no ratio claim)
     p.textFont('Georgia');
     p.textAlign(p.CENTER, p.TOP);
 
-    p.fill(SUB_INK);
-    p.textStyle(p.BOLD);
-    p.textSize(9.5);
-    p.text('NYT LIFT  \u00B7  MAR 2019', px, annoY);
-
-    // Divider rule
-    p.stroke(SUB_INK);
-    p.strokeWeight(0.5);
-    p.line(px - 26, annoY + 16, px + 26, annoY + 16);
-    p.noStroke();
-
-    // Magnitude — absolute number, no ratio (avoids baseline-mismatch bug)
+    // Magnitude — absolute peak only (parallel to "3×" but in secondary scale)
     p.fill(INK);
     p.textStyle(p.BOLD);
     p.textSize(18);
-    p.text('380/mo', px, annoY + 24);
+    p.text('380/mo', px, annoY);
 
-    // Subtitle
+    // Caption
     p.fill(SUB_INK);
     p.textSize(9);
     p.textStyle(p.ITALIC);
-    p.text('first-wave peak', px, annoY + 48);
+    p.text('first-wave peak (NYT-driven)', px, annoY + 24);
   }
 
   function drawTimespanAnnotation() {
