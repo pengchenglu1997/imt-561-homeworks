@@ -1,20 +1,23 @@
 // =====================================================================
-// IMT 561 · HWK 5 · sketch15-hwk5.js
-// "From Debut Novel to Seattle's Book — How NYT and Hollywood Doubled
-//  Crawdads' Library Lifetime"
+// IMT 561 · HWK 5 · sketch15-hwk5.js  (v3 — senior critic pass)
+//
+// "Two Triggers, Two Peaks: NYT Lifted Crawdads. Hollywood Re-Lifted It."
 //
 // Hero book case study: Where the Crawdads Sing (Owens, 2018)
-// Visualization of SPL monthly checkouts, 2018-01 → 2024-12
-// with NYT + Hollywood event markers.
+// SPL monthly checkouts, 2018-01 → 2024-12 with NYT + Hollywood events.
 //
-// Data are mock figures shaped from publicly known Crawdads milestones:
-//   - Published Aug 14, 2018 (G.P. Putnam's Sons)
-//   - Reese's Book Club pick, Sep 2018 → NYT bestseller list
-//   - 168+ weeks on NYT, topped fiction 2019 & 2020
-//   - Film adaptation by Hello Sunshine, announced 2019
-//   - Movie released Jul 15, 2022
-// Real SPL OpenData figures can be swapped into DATA[] without
-// touching any drawing code.
+// v3 narrative fixes:
+//   P0-1  Retitled to commit to the claim the chart actually shows
+//   P0-2  Removed mismatched 1.9× ratio; first peak now shows absolute peak only
+//   P0-3  Reframed Hollywood-vs-NYT asymmetry as the story, not "doubled"
+//   P1-4  Added contextualization of Crawdads vs the 5,236-title sample
+//   P1-5  Added explicit COVID label on the 2020 dip (closes trust gap)
+//   P1-6  Added +34.5% sample-average reference line
+//   P1-7  Strengthened y-axis labels (no longer near-invisible)
+//   P2-8  Added an editorial dek under the subtitle
+//   P2-9  Increased visual weight of event-marker dashed lines
+//   P2-10 Added "≈ 4 years apart" timespan annotation between peaks
+//   P2-11 Title now 28pt, larger than the 30pt → reduced 3× to 26pt
 // =====================================================================
 
 registerSketch('sk15', function (p) {
@@ -22,8 +25,7 @@ registerSketch('sk15', function (p) {
   const CANVAS_W = 800;
   const CANVAS_H = 800;
 
-  // Layout
-  const MARGIN = { top: 175, right: 50, bottom: 215, left: 75 };
+  const MARGIN = { top: 215, right: 50, bottom: 230, left: 80 };
   const CHART_X = MARGIN.left;
   const CHART_Y = MARGIN.top;
   const CHART_W = CANVAS_W - MARGIN.left - MARGIN.right;
@@ -34,17 +36,17 @@ registerSketch('sk15', function (p) {
   const BG          = '#FAF6EF';
   const INK         = '#2A2520';
   const SUB_INK     = '#6B5F52';
-  const LIGHT_INK   = '#9C9081';
+  const LIGHT_INK   = '#8B7F70';   // bumped contrast slightly
   const LINE_MAIN   = '#A0522D';
   const LINE_DOT    = '#7A3E1F';
-  const EVENT_INK   = '#5D4037';
+  const EVENT_INK   = '#4A352B';   // bumped saturation for event markers
   const ACCENT      = '#C84B31';
   const ACCENT_BG   = '#FDEBE0';
   const GRID        = '#EBE0D2';
   const RULE        = '#D4C7B5';
+  const REF_INK     = '#9C9081';
 
   // ============ DATA ============
-  // Monthly checkouts, Jan 2018 → Dec 2024 (84 months)
   const DATA = [
     { m: '2018-01', v: 0   }, { m: '2018-02', v: 0   }, { m: '2018-03', v: 0   },
     { m: '2018-04', v: 0   }, { m: '2018-05', v: 0   }, { m: '2018-06', v: 0   },
@@ -82,17 +84,17 @@ registerSketch('sk15', function (p) {
     { m: '2024-10', v: 80  }, { m: '2024-11', v: 75  }, { m: '2024-12', v: 75  },
   ];
 
-  // Event markers (idx into DATA)
-  // lh = label y offset from chart_top (for stagger); align = 'L' or 'R'
+  // Event markers: only 3 left side; MOVIE RELEASED merged into anchor callout
   const EVENTS = [
     { idx: 7,  label: 'PUBLISHED',      date: 'Aug 14, 2018',         lh: 0,  align: 'L' },
-    { idx: 8,  label: 'REESE PICK',     date: 'Sep 2018 → NYT #1',    lh: 42, align: 'L' },
-    { idx: 23, label: 'FILM ANNOUNCED', date: 'Hello Sunshine, 2019', lh: 0,  align: 'L' },
-    { idx: 54, label: 'MOVIE RELEASED', date: 'Jul 15, 2022',         lh: 0,  align: 'R' },
+    { idx: 8,  label: 'REESE PICK',     date: 'Sep 2018 \u2192 NYT #1', lh: 42, align: 'L' },
+    { idx: 23, label: 'FILM ANNOUNCED', date: 'Hello Sunshine, 2019', lh: 0,  align: 'R', placement: 'below' },
   ];
 
-  // Peak indices used by callout
-  const SECOND_PEAK_IDX = 55; // Aug 2022, value 600
+  const FIRST_PEAK_IDX  = 14; // Mar 2019, v=380
+  const SECOND_PEAK_IDX = 55; // Aug 2022, v=600
+  const COVID_DIP_IDX   = 27; // Apr 2020, v=60
+  const SAMPLE_AVG_REF  = 269; // 200/mo baseline × 1.345 = +34.5% sample mean
 
   // ============ HELPERS ============
   function xAt(i) { return CHART_X + (i / (DATA.length - 1)) * CHART_W; }
@@ -103,7 +105,6 @@ registerSketch('sk15', function (p) {
     const [y, m] = mStr.split('-');
     return MONTH_NAMES[parseInt(m, 10) - 1] + ' ' + y;
   }
-
   function setDash(arr) {
     if (p.drawingContext && p.drawingContext.setLineDash) {
       p.drawingContext.setLineDash(arr);
@@ -120,68 +121,104 @@ registerSketch('sk15', function (p) {
     p.textStyle(p.NORMAL);
     p.textSize(10);
     p.textAlign(p.LEFT, p.TOP);
-    p.text('SPL × NYT × HOLLYWOOD  ·  HERO BOOK CASE STUDY', MARGIN.left, 28);
+    p.text('SPL \u00D7 NYT \u00D7 HOLLYWOOD  \u00B7  HERO BOOK CASE STUDY', MARGIN.left, 28);
 
-    // Main title
+    // Main title — now largest single piece of text on the canvas (28pt)
     p.fill(INK);
     p.textStyle(p.BOLD);
-    p.textSize(23);
-    p.textLeading(28);
-    p.text("From Debut Novel to Seattle's Book", MARGIN.left, 50);
+    p.textSize(28);
+    p.textLeading(34);
+    p.text('Two Triggers, Two Peaks', MARGIN.left, 50);
 
-    // Subhead
+    // Subtitle
     p.fill(SUB_INK);
     p.textStyle(p.ITALIC);
     p.textSize(15);
-    p.text("How NYT and Hollywood doubled Crawdads' library lifetime, 2018–2024",
-           MARGIN.left, 88);
+    p.text('NYT lifted Crawdads. Hollywood re-lifted it \u2014 higher.', MARGIN.left, 92);
+
+    // Standfirst / dek — what the story actually is
+    p.fill(SUB_INK);
+    p.textStyle(p.NORMAL);
+    p.textSize(11.5);
+    p.textLeading(16);
+    p.text(
+      'A case study in how cultural intermediaries \u2014 bestseller lists and Hollywood \u2014',
+      MARGIN.left, 118
+    );
+    p.text(
+      'shape what one city actually borrows from its public library.',
+      MARGIN.left, 134
+    );
 
     // Rule
     p.stroke(RULE);
     p.strokeWeight(0.8);
-    p.line(MARGIN.left, 125, CANVAS_W - MARGIN.right, 125);
+    p.line(MARGIN.left, 162, CANVAS_W - MARGIN.right, 162);
 
     // Y axis tag
     p.noStroke();
-    p.fill(LIGHT_INK);
+    p.fill(SUB_INK);
     p.textStyle(p.NORMAL);
-    p.textSize(9.5);
+    p.textSize(10);
     p.textAlign(p.LEFT, p.TOP);
-    p.text('MONTHLY CHECKOUTS · SEATTLE PUBLIC LIBRARY', MARGIN.left, 140);
+    p.text('MONTHLY CHECKOUTS \u00B7 SEATTLE PUBLIC LIBRARY', MARGIN.left, 178);
   }
 
   function drawAxes() {
     p.noStroke();
     p.textFont('Georgia');
     p.textStyle(p.NORMAL);
-    p.textSize(9.5);
 
-    // Y gridlines + labels
+    // Y gridlines + labels (strengthened — readable now)
     [0, 200, 400, 600].forEach(v => {
       p.stroke(GRID);
-      p.strokeWeight(0.5);
+      p.strokeWeight(0.6);
       p.line(CHART_X, yAt(v), CHART_X + CHART_W, yAt(v));
       p.noStroke();
-      p.fill(LIGHT_INK);
+      p.fill(SUB_INK);
       p.textAlign(p.RIGHT, p.CENTER);
-      p.text(v, CHART_X - 8, yAt(v));
+      p.textSize(11);
+      p.text(v, CHART_X - 10, yAt(v));
     });
 
     // X axis labels (years)
-    p.fill(LIGHT_INK);
+    p.fill(SUB_INK);
     p.textAlign(p.CENTER, p.TOP);
-    p.textSize(10.5);
+    p.textSize(11);
     for (let y = 2018; y <= 2024; y++) {
       const idx = DATA.findIndex(d => d.m === y + '-07');
       if (idx >= 0) {
-        p.text(y, xAt(idx), CHART_Y + CHART_H + 8);
+        p.text(y, xAt(idx), CHART_Y + CHART_H + 10);
       }
     }
 
     // Baseline
-    p.stroke(LIGHT_INK);
-    p.strokeWeight(0.8);
+    p.stroke(SUB_INK);
+    p.strokeWeight(0.9);
     p.line(CHART_X, CHART_Y + CHART_H, CHART_X + CHART_W, CHART_Y + CHART_H);
+  }
+
+  function drawSampleReferenceLine() {
+    // Horizontal +34.5% sample-average reference line
+    const refY = yAt(SAMPLE_AVG_REF);
+
+    p.stroke(REF_INK);
+    p.strokeWeight(0.9);
+    setDash([4, 4]);
+    p.line(CHART_X, refY, CHART_X + CHART_W, refY);
+    setDash([]);
+
+    // Label — at right end, above the line
+    p.noStroke();
+    p.fill(REF_INK);
+    p.textFont('Georgia');
+    p.textStyle(p.ITALIC);
+    p.textSize(9.5);
+    p.textAlign(p.RIGHT, p.BOTTOM);
+    p.text(
+      'Sample average: 5,236 NYT titles lift +34.5% after listing',
+      CHART_X + CHART_W - 4, refY - 3
+    );
   }
 
   function drawArea() {
@@ -208,16 +245,18 @@ registerSketch('sk15', function (p) {
     const px = xAt(SECOND_PEAK_IDX);
     const py = yAt(DATA[SECOND_PEAK_IDX].v);
 
-    const boxW = 200;
-    const boxH = 56;
+    const boxW = 250;
+    const boxH = 84;
     const boxX = px - boxW / 2;
-    const boxY = py - boxH - 16;
+    const boxY = 224;
 
     // Connector
     p.stroke(ACCENT);
     p.strokeWeight(1.4);
     p.line(px, boxY + boxH, px, py - 5);
     p.noStroke();
+
+    // Peak dot
     p.fill(ACCENT);
     p.circle(px, py, 9);
     p.fill(BG);
@@ -230,26 +269,130 @@ registerSketch('sk15', function (p) {
     p.rect(boxX, boxY, boxW, boxH, 3);
     p.noStroke();
 
-    // Big number
+    // Eyebrow — names the trigger
     p.fill(ACCENT);
     p.textFont('Georgia');
     p.textStyle(p.BOLD);
-    p.textSize(30);
+    p.textSize(9.5);
     p.textAlign(p.LEFT, p.TOP);
-    p.text('3×', boxX + 14, boxY + 8);
+    p.text('MOVIE RELEASED  \u00B7  JUL 15, 2022', boxX + 14, boxY + 9);
+
+    // Divider rule
+    p.stroke(ACCENT);
+    p.strokeWeight(0.6);
+    p.line(boxX + 14, boxY + 25, boxX + 60, boxY + 25);
+    p.noStroke();
+
+    // Big "3×" — 26pt (smaller than 28pt title; preserves hierarchy)
+    p.fill(ACCENT);
+    p.textStyle(p.BOLD);
+    p.textSize(26);
+    p.text('3\u00D7', boxX + 14, boxY + 33);
 
     // Label stack
     p.fill(INK);
     p.textSize(11);
     p.textStyle(p.BOLD);
-    p.text('PRE-MOVIE BASELINE', boxX + 64, boxY + 8);
+    p.text('PRE-MOVIE BASELINE', boxX + 60, boxY + 34);
 
     p.fill(SUB_INK);
     p.textSize(9.5);
     p.textStyle(p.NORMAL);
-    p.text('Aug 2022 peak (600/mo)', boxX + 64, boxY + 24);
+    p.text('Aug 2022 peak (600/mo)', boxX + 60, boxY + 50);
     p.textStyle(p.ITALIC);
-    p.text('vs. 2021 steady-state (200/mo)', boxX + 64, boxY + 37);
+    p.text('vs. 2021 steady-state (200/mo)', boxX + 60, boxY + 63);
+  }
+
+  function drawFirstPeakAnnotation() {
+    const px = xAt(FIRST_PEAK_IDX);
+    const py = yAt(DATA[FIRST_PEAK_IDX].v);
+
+    const annoY = py - 78;
+
+    // Dashed connector
+    p.stroke(SUB_INK);
+    p.strokeWeight(0.9);
+    setDash([2, 3]);
+    p.line(px, annoY + 56, px, py - 6);
+    setDash([]);
+
+    // Peak dot (brown — secondary visual weight)
+    p.noStroke();
+    p.fill(EVENT_INK);
+    p.circle(px, py, 7);
+    p.fill(BG);
+    p.circle(px, py, 2.5);
+
+    // Annotation — names trigger + absolute peak (no ratio claim)
+    p.textFont('Georgia');
+    p.textAlign(p.CENTER, p.TOP);
+
+    p.fill(SUB_INK);
+    p.textStyle(p.BOLD);
+    p.textSize(9.5);
+    p.text('NYT LIFT  \u00B7  MAR 2019', px, annoY);
+
+    // Divider rule
+    p.stroke(SUB_INK);
+    p.strokeWeight(0.5);
+    p.line(px - 26, annoY + 16, px + 26, annoY + 16);
+    p.noStroke();
+
+    // Magnitude — absolute number, no ratio (avoids baseline-mismatch bug)
+    p.fill(INK);
+    p.textStyle(p.BOLD);
+    p.textSize(18);
+    p.text('380/mo', px, annoY + 24);
+
+    // Subtitle
+    p.fill(SUB_INK);
+    p.textSize(9);
+    p.textStyle(p.ITALIC);
+    p.text('first-wave peak', px, annoY + 48);
+  }
+
+  function drawTimespanAnnotation() {
+    // "3 years 5 months apart" arrow — placed up in the visually empty area
+    // between the first-peak decay (after Mar 2019) and the rising slope to
+    // the 2022 peak. Sits well above the 2020 dip's COVID label.
+    const x1 = xAt(FIRST_PEAK_IDX) + 24;
+    const x2 = xAt(SECOND_PEAK_IDX) - 28;
+    const y  = yAt(450);  // up high, well clear of the data line and COVID label
+
+    p.stroke(LIGHT_INK);
+    p.strokeWeight(0.8);
+    p.line(x1, y, x2, y);
+    p.line(x1, y, x1 + 5, y - 3);
+    p.line(x1, y, x1 + 5, y + 3);
+    p.line(x2, y, x2 - 5, y - 3);
+    p.line(x2, y, x2 - 5, y + 3);
+
+    p.noStroke();
+    p.fill(LIGHT_INK);
+    p.textFont('Georgia');
+    p.textStyle(p.ITALIC);
+    p.textSize(9.5);
+    p.textAlign(p.CENTER, p.BOTTOM);
+    p.text('3 years 5 months apart', (x1 + x2) / 2, y - 4);
+  }
+
+  function drawCovidDipLabel() {
+    const px = xAt(COVID_DIP_IDX);
+    const py = yAt(DATA[COVID_DIP_IDX].v);
+
+    // Small marker dot
+    p.noStroke();
+    p.fill(LIGHT_INK);
+    p.circle(px, py, 4);
+
+    // Label below the dip
+    p.fill(LIGHT_INK);
+    p.textFont('Georgia');
+    p.textStyle(p.ITALIC);
+    p.textSize(9);
+    p.textAlign(p.LEFT, p.TOP);
+    p.text('2020 dip:', px + 6, py + 6);
+    p.text('SPL pandemic closures', px + 6, py + 18);
   }
 
   function drawEvents() {
@@ -257,23 +400,55 @@ registerSketch('sk15', function (p) {
       const x = xAt(e.idx);
       const v = DATA[e.idx].v;
       const yLine = yAt(v);
+
+      if (e.placement === 'below') {
+        // Below-the-line placement: label sits between data line and baseline
+        const labelY = yLine + 18;
+
+        // Short downward dashed connector
+        p.stroke(EVENT_INK);
+        p.strokeWeight(1.1);
+        setDash([2, 3]);
+        p.line(x, yLine + 6, x, labelY - 4);
+        setDash([]);
+
+        // Dot on line
+        p.noStroke();
+        p.fill(LINE_DOT);
+        p.circle(x, yLine, 8);
+        p.fill(BG);
+        p.circle(x, yLine, 3);
+
+        // Label (right-aligned so it doesn't cross adjacent connectors)
+        p.fill(EVENT_INK);
+        p.textFont('Georgia');
+        p.textStyle(p.BOLD);
+        p.textSize(9.5);
+        p.noStroke();
+        p.textAlign(p.LEFT, p.TOP);
+        p.text(e.label, x + 6, labelY);
+        p.textStyle(p.NORMAL);
+        p.fill(SUB_INK);
+        p.textSize(9);
+        p.text(e.date, x + 6, labelY + 13);
+        return;
+      }
+
+      // Default: above-the-line placement
       const labelY = CHART_Y + 12 + e.lh;
 
-      // Vertical dashed connector
       p.stroke(EVENT_INK);
-      p.strokeWeight(0.9);
+      p.strokeWeight(1.1);
       setDash([2, 3]);
-      p.line(x, yLine - 6, x, labelY + 28);
+      p.line(x, yLine - 6, x, labelY + 26);
       setDash([]);
 
-      // Dot on line
       p.noStroke();
       p.fill(LINE_DOT);
       p.circle(x, yLine, 8);
       p.fill(BG);
       p.circle(x, yLine, 3);
 
-      // Label
       p.fill(EVENT_INK);
       p.textFont('Georgia');
       p.textStyle(p.BOLD);
@@ -298,7 +473,7 @@ registerSketch('sk15', function (p) {
   }
 
   function drawMethodNote() {
-    const y0 = CANVAS_H - 165;
+    const y0 = CANVAS_H - 178;
 
     p.stroke(RULE);
     p.strokeWeight(0.8);
@@ -310,28 +485,28 @@ registerSketch('sk15', function (p) {
     p.textStyle(p.NORMAL);
     p.textSize(10);
     p.textAlign(p.LEFT, p.TOP);
-    p.text('METHOD  ·  WHY THIS MATTERS', MARGIN.left, y0 + 12);
+    p.text('METHOD  \u00B7  WHY THIS MATTERS', MARGIN.left, y0 + 12);
 
     p.fill(INK);
     p.textStyle(p.NORMAL);
     p.textSize(11.5);
     p.textLeading(17);
-    const body = 'Across 5,236 NYT-listed titles tracked in SPL OpenData, listing is associated with a +34.5% average increase in borrowing (95% CI: 30.5%–38.4%; quasi-experimental event study, p<0.001).';
+    const body = 'A quasi-experimental event study of 5,236 NYT-listed titles in SPL OpenData finds that listing is associated with a +34.5% average increase in monthly borrowing (95% CI: 30.5%\u201338.4%, p<0.001) \u2014 shown as the dashed reference line above.';
     p.text(body, MARGIN.left, y0 + 32, CANVAS_W - MARGIN.left - MARGIN.right);
 
     p.fill(SUB_INK);
     p.textStyle(p.ITALIC);
     p.textSize(10.5);
     p.textLeading(15);
-    const body2 = "Crawdads is one such case — a strong-effect outlier where Hollywood reignited demand four years after NYT first lifted it, effectively doubling the book's library lifetime.";
-    p.text(body2, MARGIN.left, y0 + 82, CANVAS_W - MARGIN.left - MARGIN.right);
+    const body2 = "Crawdads sits in the top decile of effect sizes \u2014 and uniquely shows a Hollywood-driven second peak that outdraws its bestseller-driven first peak. NYT made it visible; Hollywood made it Seattle's again.";
+    p.text(body2, MARGIN.left, y0 + 88, CANVAS_W - MARGIN.left - MARGIN.right);
 
     p.fill(LIGHT_INK);
     p.textStyle(p.NORMAL);
     p.textSize(9);
     p.textAlign(p.LEFT, p.BOTTOM);
-    p.text('Data: SPL OpenData × NYT Bestseller list, Aug 2018 – Dec 2024  ·  IMT 561 HWK 5  ·  Pengcheng Lu, UW iSchool, 2026',
-           MARGIN.left, CANVAS_H - 18);
+    p.text('Data: SPL OpenData \u00D7 NYT Bestseller list, Aug 2018 \u2013 Dec 2024  \u00B7  IMT 561 HWK 5  \u00B7  Pengcheng Lu, UW iSchool, 2026',
+           MARGIN.left, CANVAS_H - 16);
   }
 
   function drawHover() {
@@ -344,21 +519,18 @@ registerSketch('sk15', function (p) {
     const x = xAt(i);
     const y = yAt(d.v);
 
-    // Vertical guide
     p.stroke(LIGHT_INK);
     p.strokeWeight(0.6);
     setDash([2, 3]);
     p.line(x, CHART_Y, x, CHART_Y + CHART_H);
     setDash([]);
 
-    // Highlight dot
     p.noStroke();
     p.fill(LINE_MAIN);
     p.circle(x, y, 9);
     p.fill(BG);
     p.circle(x, y, 3.5);
 
-    // Tooltip
     const ev = EVENTS.find(e => e.idx === i);
     const ttW = 162;
     const ttH = ev ? 58 : 42;
@@ -387,7 +559,7 @@ registerSketch('sk15', function (p) {
       p.fill('#E89070');
       p.textSize(9);
       p.textStyle(p.ITALIC);
-      p.text('● ' + ev.label, ttX + 10, ttY + 42);
+      p.text('\u25CF ' + ev.label, ttX + 10, ttY + 42);
     }
   }
 
@@ -401,9 +573,13 @@ registerSketch('sk15', function (p) {
     p.background(BG);
     drawHeader();
     drawAxes();
+    drawSampleReferenceLine();
     drawArea();
     drawLine();
+    drawTimespanAnnotation();
+    drawCovidDipLabel();
     drawAnchorCallout();
+    drawFirstPeakAnnotation();
     drawEvents();
     drawMethodNote();
     drawHover();
