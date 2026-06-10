@@ -168,6 +168,29 @@ registerSketch('sk2', function (p) {
     const cy = watchY + watchH / 2;
     const maxW = watchW - 60;
 
+    // ── progress arc: how soon the spoken phrase will change ──
+    // EXACT changes every minute, CASUAL every 5-min bucket (centered on
+    // multiples of 5), VAGUE roughly every hour. The arc completes exactly
+    // when the words flip — motion is mapped to the display's own refresh.
+    const now = new Date();
+    const secNow = now.getSeconds() + now.getMilliseconds() / 1000;
+    const minSec = now.getMinutes() * 60 + secNow;
+    let phraseProg;
+    if (MODES[modeIdx] === 'EXACT')       phraseProg = secNow / 60;
+    else if (MODES[modeIdx] === 'CASUAL') phraseProg = ((minSec + 150) % 300) / 300;
+    else                                  phraseProg = minSec / 3600;
+
+    const arcW = watchW - 30;
+    const arcH = watchH - 30;
+    p.noFill();
+    p.stroke(255, 255, 255, 30); p.strokeWeight(2);
+    p.rect(watchX + 15, watchY + 15, arcW, arcH, 36);
+
+    p.stroke(80, 200, 220);
+    p.strokeWeight(2.5); p.strokeCap(p.ROUND);
+    p.arc(cx, cy, arcW, arcH, -p.HALF_PI, -p.HALF_PI + phraseProg * p.TWO_PI);
+    p.noStroke();
+
     // ── precision badge (top of watch) ──
     p.textAlign(p.CENTER, p.CENTER);
     p.fill(80, 200, 220, 180);
