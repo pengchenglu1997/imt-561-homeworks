@@ -53,6 +53,44 @@ registerSketch('sk2', function (p) {
     return { modifier, lines: [numWord(60 - r), 'TO ' + nhw] };
   }
 
+  // ── exact phrasing: full-precision time, still in words ──
+  function exactPhrase(h, m) {
+    const hw = hourWord(h);
+    if (m === 0)  return { modifier: '', lines: [hw, "O'CLOCK"] };
+    if (m < 10)   return { modifier: '', lines: [hw, 'OH ' + numWord(m)] };
+    return { modifier: '', lines: [hw, numWord(m)] };
+  }
+
+  // ── vague phrasing: the precision you use with friends ──
+  function vaguePhrase(h) {
+    if (h < 5)  return { modifier: '', lines: ['THE SMALL', 'HOURS'] };
+    if (h < 8)  return { modifier: '', lines: ['EARLY', 'MORNING'] };
+    if (h < 11) return { modifier: '', lines: ['MID-', 'MORNING'] };
+    if (h < 13) return { modifier: '', lines: ['AROUND', 'MIDDAY'] };
+    if (h < 15) return { modifier: '', lines: ['EARLY', 'AFTERNOON'] };
+    if (h < 17) return { modifier: '', lines: ['LATE', 'AFTERNOON'] };
+    if (h < 21) return { modifier: '', lines: ['EVENING'] };
+    return { modifier: '', lines: ['NIGHT-TIME'] };
+  }
+
+  // precision levels mirror how people speak time in different social contexts
+  const MODES = ['EXACT', 'CASUAL', 'VAGUE'];
+  let modeIdx = 1; // default: CASUAL — how you'd answer "what time is it?"
+
+  function currentPhrase() {
+    const h = p.hour(), m = p.minute();
+    if (MODES[modeIdx] === 'EXACT') return exactPhrase(h, m);
+    if (MODES[modeIdx] === 'VAGUE') return vaguePhrase(h);
+    return casualPhrase(h, m);
+  }
+
+  function isOverWatch() {
+    return (
+      p.mouseX >= watchX && p.mouseX <= watchX + watchW &&
+      p.mouseY >= watchY && p.mouseY <= watchY + watchH
+    );
+  }
+
   p.setup = function () {
     p.createCanvas(CANVAS_SIZE, CANVAS_SIZE);
     p.textFont('sans-serif');
@@ -107,12 +145,20 @@ registerSketch('sk2', function (p) {
     p.text('smartwatch  ·  time as you would say it aloud  ·  knowledge workers',
            CANVAS_SIZE / 2, 86);
 
+    p.fill(150); p.textSize(11);
+    p.text('click watch face to change precision:  ' + MODES.join('  →  '),
+           CANVAS_SIZE / 2, 110);
+
     // smartwatch frame
     p.fill(40);
     p.rect(watchX - 8, watchY - 8, watchW + 16, watchH + 16, 56);
 
     const fc = faceColor(p.hour(), p.minute());
-    p.fill(fc[0], fc[1], fc[2]);
+    if (isOverWatch()) {
+      p.fill(fc[0] + 15, fc[1] + 15, fc[2] + 15); // slight brighten on hover
+    } else {
+      p.fill(fc[0], fc[1], fc[2]);
+    }
     p.rect(watchX, watchY, watchW, watchH, 48);
 
     p.fill(60);
@@ -122,10 +168,15 @@ registerSketch('sk2', function (p) {
     const cy = watchY + watchH / 2;
     const maxW = watchW - 60;
 
-    // ── spoken-time phrase ──
-    const { modifier, lines } = casualPhrase(p.hour(), p.minute());
-
+    // ── precision badge (top of watch) ──
     p.textAlign(p.CENTER, p.CENTER);
+    p.fill(80, 200, 220, 180);
+    p.rect(cx - 45, watchY + 30, 90, 18, 9);
+    p.fill(20); p.textSize(9); p.textStyle(p.BOLD);
+    p.text(MODES[modeIdx], cx, watchY + 39);
+
+    // ── spoken-time phrase ──
+    const { modifier, lines } = currentPhrase();
 
     // "IT IS" lead-in
     p.fill(160); p.textSize(18); p.textStyle(p.NORMAL);
@@ -147,14 +198,22 @@ registerSketch('sk2', function (p) {
       p.text(ln, cx, startY + i * lineGap);
     });
 
-    // daypart suffix
-    p.fill(160); p.textSize(16); p.textStyle(p.NORMAL);
-    p.text(daypart(p.hour()), cx, watchY + watchH - 70);
+    // daypart suffix (redundant in VAGUE mode — the phrase IS the daypart)
+    if (MODES[modeIdx] !== 'VAGUE') {
+      p.fill(160); p.textSize(16); p.textStyle(p.NORMAL);
+      p.text(daypart(p.hour()), cx, watchY + watchH - 70);
+    }
 
     // border
     p.noFill();
     p.stroke(0); p.strokeWeight(1);
     p.rect(0, 0, p.width - 1, p.height - 1);
+  };
+
+  p.mousePressed = function () {
+    if (isOverWatch()) {
+      modeIdx = (modeIdx + 1) % MODES.length;
+    }
   };
 
   p.windowResized = function () { p.resizeCanvas(CANVAS_SIZE, CANVAS_SIZE); };
