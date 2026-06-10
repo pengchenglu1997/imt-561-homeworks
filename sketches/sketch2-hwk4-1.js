@@ -27,6 +27,7 @@ registerSketch('sk2', function (p) {
   function daypart(h) {
     if (h < 5) return 'AT NIGHT';
     if (h < 12) return 'IN THE MORNING';
+    if (h === 12) return 'AT MIDDAY';
     if (h < 17) return 'IN THE AFTERNOON';
     if (h < 21) return 'IN THE EVENING';
     return 'AT NIGHT';
@@ -38,7 +39,7 @@ registerSketch('sk2', function (p) {
     let r = Math.round(m / 5) * 5;
     let modifier = '';
     if (r > m) modifier = 'ALMOST';
-    else if (r < m) modifier = 'JUST PAST';
+    else if (r < m) modifier = 'JUST AFTER'; // not "just past" — avoids "PAST … PAST"
 
     if (r === 60) { r = 0; h = h + 1; }
 
