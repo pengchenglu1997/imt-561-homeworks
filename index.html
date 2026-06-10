@@ -79,25 +79,34 @@
       </div>
     </section>
 
-    <!-- ───────── HWK 4.1 — BIG CHARACTER WATCH ───────── -->
+    <!-- ───────── HWK 4.1 — SPOKEN TIME ───────── -->
     <section id="tab2" class="tab-content" role="tabpanel">
       <div id="sketch-container-sk2" class="sketch-container"></div>
       <div id="sketch-drawing-sk2" class="sketch-evolution">
         <div class="welcome-template hwk-template" aria-labelledby="sk2-notes-title">
-          <h3 id="sk2-notes-title">HWK 4.1 — Big Character Watch</h3>
+          <h3 id="sk2-notes-title">HWK 4.1 — Spoken Time</h3>
 
           <h4>Context of use</h4>
           <p>
-            <strong>Who:</strong> Knowledge workers and commuters who glance at a smartwatch or
-            desktop widget for a quick read of time, date, and weather — without unlocking
-            their phone or opening an app.
-            <strong>Where:</strong> Smartwatch face, desktop ambient widget, or a pinned
-            browser tab on a second monitor.
-            <strong>Problem solved:</strong> Most analog and digital clocks force the user to
-            decode small numerals or interpret hand positions. A big-character watch lets
-            users read the time at peripheral glance, with date and weather one row away.
-            I'm personally drawn to this design because I check time dozens of times a day,
-            and small fonts on a watch make that feel like work.
+            <strong>Who:</strong> Knowledge workers who glance at a smartwatch dozens of
+            times a day — usually not because they need the numeric value of the time, but
+            because they need a <em>verbal</em> answer: "it's almost half past ten, I should
+            wrap up."
+            <strong>Where:</strong> Smartwatch face or ambient desktop widget.
+            <strong>Problem solved:</strong> Every clock — analog or digital — shows time as
+            a number that the brain then silently translates into words before acting on it
+            ("10:28" → "almost half past, meeting soon"). Spoken Time removes that
+            translation step: it renders time in the words you would actually say aloud.
+            <strong>Why choose this over any existing smartwatch face?</strong> No stock
+            watch face does this. Apple, Garmin, and Pixel faces all present numerals or
+            hands and leave the verbal conversion to the user; Spoken Time delivers the
+            pre-verbalized answer, and lets the wearer tune <em>how precise</em> that answer
+            is (EXACT / CASUAL / VAGUE) — matching how humans naturally vary time precision
+            by social context. The conversational rounding ("ALMOST HALF PAST TEN") and the
+            adjustable precision are value that no off-the-shelf face provides. This matters
+            to me personally because I caught myself reading "10:13" on my watch and telling
+            a friend "quarter past" — the watch made me do the rounding it should have done
+            for me.
           </p>
 
           <article class="clock-template">
@@ -105,74 +114,104 @@
             <div class="sketch-grid">
               <figure><img src="images/sketch-1.jpeg" alt="Sketch 1: Apple-themed IoT watch face" /><figcaption>1. Apple-themed IoT watch face</figcaption></figure>
               <figure><img src="images/sketch-2.jpeg" alt="Sketch 2: Binary clock" /><figcaption>2. Binary Clock</figcaption></figure>
-              <figure><img src="images/sketch-3.jpeg" alt="Sketch 3: Big-character clock (selected)" /><figcaption>3. Big-character clock ★ selected</figcaption></figure>
+              <figure><img src="images/sketch-3.jpeg" alt="Sketch 3: Big-character clock" /><figcaption>3. Big-character clock</figcaption></figure>
               <figure><img src="images/sketch-4.jpeg" alt="Sketch 4: Mandain minimal analog" /><figcaption>4. Mandain minimal analog</figcaption></figure>
-              <figure class="full"><img src="images/sketch-5.jpeg" alt="Sketch 5: Word clock" /><figcaption>5. Word Clock</figcaption></figure>
+              <figure class="full"><img src="images/sketch-5.jpeg" alt="Sketch 5: Word clock (selected)" /><figcaption>5. Word Clock ★ selected</figcaption></figure>
             </div>
 
-            <h4>Why I chose Sketch 3 (Big-character)</h4>
+            <h4>Why I chose Sketch 5 (Word Clock)</h4>
             <p>
-              Of the five smartwatch face explorations, Sketch 3 had the strongest payoff
-              per pixel: it shows time, date, location, and weather without any hand-decoding
-              (unlike the IoT concentric rings or the binary clock) and without sacrificing
-              density (unlike the Mandain minimal analog or the pure word clock). The
-              hierarchy is clear — big time in the middle, supporting info above and below —
-              which maps perfectly onto how people actually scan a watch face.
+              I originally prototyped Sketch 3 (big-character digital), but instructor
+              feedback was blunt and fair: a large HH:MM with date and weather is a
+              replication of what every smartwatch already ships with — the rationale
+              reduces to "why people own smartwatches." So I returned to my sketch set and
+              picked the one design that questions an assumption instead of restyling it:
+              Sketch 5, time written in words ("IT IS HALF PAST TEN"). It re-encodes time
+              from numerals into natural language — the representation people actually use
+              when they speak. Against the alternatives: the binary clock (Sketch 2) is
+              novel but fails the glanceability requirement of the smartwatch context, the
+              minimal analog (Sketch 4) is exactly the "conventional reproduction" the
+              brief warns against, and the IoT rings (Sketch 1) replicate Apple's activity
+              face. The word clock is the only sketch that is both novel <em>and</em>
+              faithful to the glance-context.
             </p>
 
             <h4>Design decisions in the final clock</h4>
             <p>
-              <strong>1. Hierarchy by size.</strong> The HH:MM time is rendered at 120pt —
-              roughly 6× the size of the date and weather rows. This guarantees the primary
-              information is read first, with peripheral vision.
+              <strong>1. Words, not numerals — encoding choice.</strong> Time is mapped to
+              natural-language phrases instead of digits. This is a deliberate re-encoding
+              of the data: the same <code>hour()</code>/<code>minute()</code> values, but
+              represented in the reader's output vocabulary rather than the clock's input
+              format. The phrase hierarchy (dim "IT IS" → bright bold time words → dim
+              daypart) uses size and value contrast so the time words are read first.
             </p>
             <p>
-              <strong>2. Continuous progress arc.</strong> A thin cyan arc sweeps the inner
-              border every minute. I switched from <code>p.second()</code> +
-              <code>p.millis()</code> to a single <code>Date.now() % 60000</code> source to
-              eliminate a one-frame jump on the seconds rollover.
+              <strong>2. Conversational rounding.</strong> In CASUAL mode the clock rounds
+              to the nearest five minutes and prepends "ALMOST" or "JUST AFTER" — e.g.,
+              10:28 renders as "ALMOST HALF PAST TEN". The modifier is set in the accent
+              color because it carries the freshest information (which side of the
+              landmark you are on), just as a speaker stresses it in conversation.
             </p>
             <p>
-              <strong>3. Day/night background gradient.</strong> The watch face background
-              interpolates between four anchor colors (deep navy at midnight, cool blue at
-              dawn, neutral at noon, warm purple at dusk). This adds a subtle "time of day"
-              cue beyond the numeric display.
+              <strong>3. Click to change precision (EXACT / CASUAL / VAGUE).</strong> The
+              core interaction. EXACT spells the full time ("TEN TWENTY-EIGHT"), CASUAL
+              speaks like a colleague ("ALMOST HALF PAST TEN"), VAGUE answers like a friend
+              on a weekend ("MID-MORNING"). Humans choose time precision by social context;
+              no existing watch face exposes precision as a user control. This is the
+              feature that makes the design something a stock smartwatch cannot do.
             </p>
             <p>
-              <strong>4. Click to cycle face themes.</strong> Clicking the watch face cycles
-              between three layouts — BIG TIME (default), DATE FOCUS (large weekday + day
-              number), and WEATHER FOCUS (large temperature). This mirrors how Apple Watch
-              users customize complications, and lets the same data structure serve different
-              glance contexts.
+              <strong>4. Progress arc = time until the words change.</strong> The cyan arc
+              completes exactly when the phrase will flip (per minute in EXACT, per 5-minute
+              bucket in CASUAL, per hour in VAGUE). Motion is therefore mapped to the
+              display's own data refresh, not to a decorative seconds hand — the arc answers
+              "how stale is what I'm reading?"
+            </p>
+            <p>
+              <strong>5. Day/night background gradient.</strong> Kept from the earlier
+              prototype: the face interpolates between four anchor colors (deep navy at
+              midnight, cool blue at dawn, neutral at noon, warm purple at dusk), a
+              redundant low-attention encoding of the daypart that the words state
+              explicitly.
             </p>
 
-            <h4>Iteration log (peer feedback + self-testing)</h4>
+            <h4>Iteration log (instructor + peer feedback)</h4>
             <div class="iter-list">
               <ol>
-                <li><strong>Iteration 1 (self-testing):</strong> First version showed only
-                  HH:MM with no surrounding context. The watch felt like a digital alarm
-                  clock — usable but generic. Added the date row above and location/weather
-                  row below to mirror real smartwatch information density.</li>
-                <li><strong>Iteration 2 (self-testing):</strong> Added a progress arc using
-                  <code>p.second() + p.millis()/1000</code>. Noticed a one-frame jump every
-                  time seconds rolled over. Switched the entire animation to
-                  <code>Date.now() % 60000</code> — single time source, perfectly smooth.</li>
-                <li><strong>Iteration 3 (peer feedback):</strong> A classmate said the watch
-                  "looked the same at 9 AM and 9 PM." Added the day/night background
-                  gradient that interpolates between four anchor colors across 24h, so an
-                  evening screenshot now reads visibly different from a morning one.</li>
-                <li><strong>Iteration 4 (peer feedback):</strong> Reviewer asked "what if I
-                  care more about the date than the time?" Added the click-to-cycle face
-                  themes — BIG TIME / DATE FOCUS / WEATHER FOCUS — so the same watch can
-                  serve different glance contexts.</li>
+                <li><strong>Iteration 1 (big-character prototype):</strong> Built a large
+                  HH:MM face with date and weather rows, day/night gradient, and
+                  click-to-cycle layouts (see commit history).</li>
+                <li><strong>Iteration 2 (instructor feedback):</strong> "Design is not
+                  unique — why would your audience choose this over any current smartwatch
+                  interface?" I could not answer it, which meant the concept, not the
+                  execution, was wrong. Pivoted to Sketch 5 and rebuilt the face around
+                  natural-language time with conversational rounding.</li>
+                <li><strong>Iteration 3 (peer feedback):</strong> A classmate testing the
+                  word clock said "half past ten" felt wrong at 10:28 — "I'd say
+                  <em>almost</em> half past." Added the ALMOST / JUST AFTER modifiers so
+                  the rounding direction is explicit, and gave the modifier the accent
+                  color.</li>
+                <li><strong>Iteration 4 (peer feedback):</strong> Another reader asked
+                  "when would I ever need the exact minute, then?" — which surfaced that
+                  precision is contextual, not fixed. Added the click-to-cycle EXACT /
+                  CASUAL / VAGUE modes and re-mapped the progress arc to
+                  time-until-phrase-change per mode.</li>
+                <li><strong>Iteration 5 (self-testing):</strong> Found awkward phrases at
+                  edge times — "JUST PAST FIVE PAST FIVE" at 5:07 and "TWELVE O'CLOCK IN
+                  THE AFTERNOON" at noon. Changed the modifier to "JUST AFTER" and added an
+                  "AT MIDDAY" daypart for the 12 o'clock hour.</li>
               </ol>
             </div>
             <h4>Self-reflection / future work</h4>
             <p>
-              Real geolocation + live weather API (currently mocked at Seattle 12°C). Animated
-              transitions between face themes. The day/night gradient is intentionally subtle,
-              but a more visible background motif (sun/moon icon) would make the temporal cue
-              stronger for low-attention glances.
+              The English phrase grammar is hand-built; supporting other languages (Chinese
+              "十点半" or the Norwegian "halv elleve" convention, which counts toward the
+              next hour) would test whether the encoding generalizes — different cultures
+              round time differently. I would also like the precision to adapt
+              automatically: calendar-aware context (5 minutes before a meeting → EXACT;
+              Saturday morning → VAGUE) instead of a manual click. Finally, a fade
+              transition when the phrase flips would make the change itself glanceable
+              rather than instantaneous.
             </p>
           </article>
         </div>
